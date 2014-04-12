@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Mesh Generation</category>
+  <title>Cleaver Tet Mesher</title>
+  <description><![CDATA[This is a CLI module for generating high quality volumetric tetrahedral meshes and triangle surface meshes of multimaterial volume data.]]></description>
+  <version>1.5.4</version>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/4.3/Modules/CleaverCLI</documentation-url>
+    <license>http://www.sci.utah.edu/software/cleaver#twoj_fragment1-2</license>
+  <contributor>Jonathan Bronson (SCI Institute) </contributor>
+  <acknowledgements>This project was supported by grants from the National Center for Research Resources (5P41RR012553-14) and the National Institute of General Medical Sciences (8 P41 GM103545-14) from the National Institutes of Health.</acknowledgements>
+  <parameters>
+      <label>IO</label>
+      <description><![CDATA[Input/output parameters]]></description>
+   <image>
+     <name>inputVolume1</name>
+     <label>Input Volume 1</label>
+     <channel>input</channel>
+     <index>1</index>
+     <description>Material Volume 1</description>
+   </image>
+   <image>
+     <name>inputVolume2</name>
+     <label>Input Volume 2</label>
+     <channel>input</channel>
+     <longflag>input2</longflag>
+     <description>Material Volume 2</description>
+   </image>
+   <image>
+     <name>inputVolume3</name>
+     <label>Input Volume 3</label>
+     <channel>input</channel>
+     <longflag>input3</longflag>
+     <description>Input volume to be filtered</description>
+   </image>
+   <image>
+     <name>inputVolume4</name>
+     <label>Input Volume 4</label>
+     <channel>input</channel>
+     <longflag>input4</longflag>
+     <description>Input volume to be filtered</description>
+   </image>
+   <image>
+     <name>inputVolume5</name>
+     <label>Input Volume 5</label>
+     <channel>input</channel>
+     <longflag>input5</longflag>
+     <description>Input volume to be filtered</description>
+   </image>
+   <image>
+     <name>inputVolume6</name>
+     <label>Input Volume 6</label>
+     <channel>input</channel>
+     <longflag>input6</longflag>
+     <description>Input volume to be filtered</description>
+   </image>
+   <image>
+     <name>inputVolume7</name>
+     <label>Input Volume 7</label>
+     <channel>input</channel>
+     <longflag>input7</longflag>
+     <description>Input volume to be filtered</description>
+   </image>
+   <image>
+     <name>inputVolume8</name>
+     <label>Input Volume 8 </label>
+     <channel>input</channel>
+     <longflag>input8</longflag>
+     <description>Input Material 8</description>
+   </image>
+
+   <!--
+   <string>
+     <name>outputMeshName</name>
+     <channel>output</channel>
+     <label>Output Mesh Name</label>
+     <longflag>output</longflag>
+     <description><![CDATA[Output Mesh Name]]></description>
+     <default>output</default>
+   </string>
+    -->
+   <geometry type="model">
+     <label>Output Mesh</label>
+     <name>outputMesh</name>
+     <channel>output</channel>
+     <longflag>output</longflag>
+   </geometry>
+
+  </parameters>
+
+  <parameters>
+    <label>Cleaver Settings</label>
+     <boolean>
+     <name>paddingOn</name>
+     <label>Use Padding?</label>
+     <channel>input</channel>
+     <longflag>padding</longflag>
+     <description><![CDATA[Setting to include padding material on boundary.]]></description>
+     <default>false</default>
+     </boolean>
+
+     <float>
+       <label>Alpha Short</label>
+       <name>alphaShort</name>
+       <channel>input</channel>
+       <longflag>as</longflag>
+       <default>0.357</default>
+       <description><![CDATA[Alpha Short violation parameter.]]></description>
+     </float>
+
+
+     <float>
+       <label>Alpha Long</label>
+       <name>alphaLong</name>
+       <channel>input</channel>
+       <longflag>al</longflag>
+       <default>0.203</default>
+       <description><![CDATA[Alpha Long violation parameter.]]></description>
+     </float>
+
+<string-enumeration>
+  <name>outputFormat</name>
+  <channel>input</channel>
+  <longflag>format</longflag>
+  <label>Output Format</label>
+  <element>tetgen</element>
+  <element>scirun</element>
+  <element>matlab</element>
+  <default>tetgen</default>
+</string-enumeration>
+
+</parameters>
+
+</executable>
