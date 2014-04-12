@@ -16,7 +16,6 @@ dihedral angles, while still conforming to multimaterial surfaces. Empirically
 these bounds have been shown to be significant.
 
 
-
 Acknowledgement: 
 Cleaver is an Open Source software project that is principally funded through
 the SCI Institute's NIH/NIGMS CIBC Center. Please use the following acknowledg-
