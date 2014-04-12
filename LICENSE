@@ -1,8 +1,19 @@
-Copyright (c) 2014, The Scientific Computing and Imaging Institute
+Copyright (c) 2014, Jonathan Bronson, 
+The Scientific Computing and Imaging Institute
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
+Cleaver is an Open Source software project that is principally funded through 
+the SCI Institute's NIH/NIGMS CIBC Center. Please use the following 
+acknowledgment and send us references to any publications, presentations, or 
+successful funding applications that make use of NIH/NIGMS CIBC software or 
+data sets.
+
+"This project was supported by grants from the National Center for Research 
+Resources (5P41RR012553-15) and the National Institute of General Medical 
+Sciences (8 P41 GM103545-15) from the National Institutes of Health."
+
+Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions are met:
 
 * Redistributions of source code must retain the above copyright notice, this
   list of conditions and the following disclaimer.
