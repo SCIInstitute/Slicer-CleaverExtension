@@ -832,7 +832,7 @@ void TetMesh::writeVTKunstructuredMesh(
       num_mats = (float)(this->tets[i]->mat_label);
     }
   }
-  std::ofstream file((filename + ".vtu"));
+  std::ofstream file((filename + ".vtu").c_str());
   file << "<?xml version=\"1.0\"?>\n";
   file << "<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" " ;
   file << "byte_order=\"LittleEndian\"";
