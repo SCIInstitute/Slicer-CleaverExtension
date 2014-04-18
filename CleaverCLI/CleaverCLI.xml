@@ -125,6 +125,7 @@
   <element>tetgen</element>
   <element>scirun</element>
   <element>matlab</element>
+  <element>VTKusm</element>
   <default>tetgen</default>
 </string-enumeration>
 
