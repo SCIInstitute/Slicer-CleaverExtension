@@ -11,79 +11,54 @@
   <parameters>
       <label>IO</label>
       <description><![CDATA[Input/output parameters]]></description>
-   <image>
-     <name>inputVolume1</name>
-     <label>Input Volume 1</label>
-     <channel>input</channel>
-     <index>1</index>
-     <description>Material Volume 1</description>
-   </image>
-   <image>
-     <name>inputVolume2</name>
-     <label>Input Volume 2</label>
-     <channel>input</channel>
-     <longflag>input2</longflag>
-     <description>Material Volume 2</description>
-   </image>
-   <image>
-     <name>inputVolume3</name>
-     <label>Input Volume 3</label>
-     <channel>input</channel>
-     <longflag>input3</longflag>
-     <description>Input volume to be filtered</description>
-   </image>
-   <image>
-     <name>inputVolume4</name>
-     <label>Input Volume 4</label>
-     <channel>input</channel>
-     <longflag>input4</longflag>
-     <description>Input volume to be filtered</description>
-   </image>
-   <image>
-     <name>inputVolume5</name>
-     <label>Input Volume 5</label>
-     <channel>input</channel>
-     <longflag>input5</longflag>
-     <description>Input volume to be filtered</description>
-   </image>
-   <image>
-     <name>inputVolume6</name>
-     <label>Input Volume 6</label>
-     <channel>input</channel>
-     <longflag>input6</longflag>
-     <description>Input volume to be filtered</description>
-   </image>
-   <image>
-     <name>inputVolume7</name>
-     <label>Input Volume 7</label>
-     <channel>input</channel>
-     <longflag>input7</longflag>
-     <description>Input volume to be filtered</description>
-   </image>
-   <image>
-     <name>inputVolume8</name>
-     <label>Input Volume 8 </label>
-     <channel>input</channel>
-     <longflag>input8</longflag>
-     <description>Input Material 8</description>
-   </image>
-
-   <!--
+      <file >
+         <label>Input Volume 1</label>
+         <name>input1</name>
+         <longflag>input1</longflag>
+      </file>
+      <file >
+         <label>Input Volume 2</label>
+         <name>input2</name>
+         <longflag>input2</longflag>
+      </file>
+      <file >
+         <label>Input Volume 3</label>
+         <name>input3</name>
+         <longflag>input3</longflag>
+      </file>
+      <file >
+         <label>Input Volume 4</label>
+         <name>input4</name>
+         <longflag>input4</longflag>
+      </file>
+      <file >
+         <label>Input Volume 5</label>
+         <name>input5</name>
+         <longflag>input5</longflag>
+      </file>
+      <file >
+         <label>Input Volume 6</label>
+         <name>input6</name>
+         <longflag>input6</longflag>
+      </file>
+      <file >
+         <label>Input Volume 7</label>
+         <name>input7</name>
+         <longflag>input7</longflag>
+      </file>
+      <file >
+         <label>Input Volume 8</label>
+         <name>input8</name>
+         <longflag>input8</longflag>
+      </file>
    <string>
-     <name>outputMeshName</name>
+     <name>outputMesh</name>
      <channel>output</channel>
      <label>Output Mesh Name</label>
      <longflag>output</longflag>
      <description><![CDATA[Output Mesh Name]]></description>
      <default>output</default>
    </string>
-    -->
-   <geometry type="model">
-     <label>Output Mesh</label>
-     <name>outputMesh</name>
-     <channel>output</channel>
-     <longflag>output</longflag>
-   </geometry>
 
   </parameters>
 
@@ -116,6 +91,13 @@
        <default>0.203</default>
        <description><![CDATA[Alpha Long violation parameter.]]></description>
      </float>
+     <boolean>
+        <name>verbose</name>
+        <flag>v</flag>
+        <default>false</default>
+       <label>Verbose?</label>
+       <description><![CDATA[Whether to output command line info.]]></description>
+     </boolean>
 
 <string-enumeration>
   <name>outputFormat</name>
@@ -127,6 +109,7 @@
   <element>matlab</element>
   <element>VTKusm</element>
   <default>tetgen</default>
+  <description><![CDATA[Format for ouput mesh.]]></description>
 </string-enumeration>
 
 </parameters>

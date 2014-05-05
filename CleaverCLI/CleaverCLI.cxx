@@ -1,6 +1,7 @@
 #include "CleaverCLICLP.h"
 #include <Cleaver/Cleaver.h>
 #include <Cleaver/Volume.h>
+#include <Cleaver/PaddedVolume.h>
 #include <Cleaver/FloatField.h>
 #include <Cleaver/InverseField.h>
 #include <teem/nrrd.h>
@@ -91,6 +92,8 @@ namespace
 
       // free local copy
       nrrdNuke(nin);
+      if(verbose)
+         std::cout << "Finished Reading file: " << filename << std::endl;
 
       //----------------------------------------
       // Create and return ScalarField
@@ -319,44 +322,29 @@ int main( int argc, char * argv[] )
    testout << "alpha short = " << alphaShort << std::endl;
    testout << "alpha long  = " << alphaLong << std::endl;
 
-   testout << "Material 1: " << inputVolume1.c_str() << std::endl;
-   testout << "Material 2: " << inputVolume2.c_str() << std::endl;
-   testout << "Material 3: " << inputVolume3.c_str() << std::endl;
-   testout << "Material 4: " << inputVolume4.c_str() << std::endl;
-   testout << "Material 5: " << inputVolume5.c_str() << std::endl;
-   testout << "Material 6: " << inputVolume6.c_str() << std::endl;
-   testout << "Material 7: " << inputVolume7.c_str() << std::endl;
-   testout << "Material 8: " << inputVolume8.c_str() << std::endl;
+   std::vector<std::string> inputs;
+   if(!input1.empty())
+      inputs.push_back(input1);
+   if(!input2.empty())
+      inputs.push_back(input2);
+   if(!input3.empty())
+      inputs.push_back(input3);
+   if(!input4.empty())
+      inputs.push_back(input4);
+   if(!input5.empty())
+      inputs.push_back(input5);
+   if(!input6.empty())
+      inputs.push_back(input6);
+   if(!input7.empty())
+      inputs.push_back(input7);
+   if(!input8.empty())
+      inputs.push_back(input8);
+
+   for(size_t i = 0; i < inputs.size(); i++)
+      testout << "Material " << (i+1) << ": " << inputs.at(i) << std::endl;
 
    testout.close();
-
-   //-----------------------------
-   // Add Non-Empty Field paths
-   //-----------------------------
-   std::vector<std::string> fieldNames;
-   if(!inputVolume1.empty())
-      fieldNames.push_back(inputVolume1);
-
-   if(!inputVolume2.empty())
-      fieldNames.push_back(inputVolume2);
-   if(!inputVolume3.empty())
-      fieldNames.push_back(inputVolume3);
-   if(!inputVolume4.empty())
-      fieldNames.push_back(inputVolume4);
-   if(!inputVolume5.empty())
-      fieldNames.push_back(inputVolume5);
-   if(!inputVolume6.empty())
-      fieldNames.push_back(inputVolume6);
-   if(!inputVolume7.empty())
-      fieldNames.push_back(inputVolume7);
-   if(!inputVolume8.empty())
-      fieldNames.push_back(inputVolume8);
-
-   bool verbose = false;
-   //std::vector<Cleaver::ScalarField*> fields = loadNRRDFiles(fieldNames, verbose);
-   std::vector<Cleaver::ScalarField*> fields;
-   Cleaver::ScalarField *field1 = loadNRRDFile(inputVolume1, verbose);
-   fields.push_back(field1);
+   std::vector<Cleaver::ScalarField*> fields = loadNRRDFiles(inputs, verbose);
 
    if(fields.empty())
       return EXIT_FAILURE;
@@ -365,7 +353,7 @@ int main( int argc, char * argv[] )
 
    Cleaver::AbstractVolume *volume = new Cleaver::Volume(fields);
 
-   if(padding)
+   if(paddingOn)
       volume = new Cleaver::PaddedVolume(volume);
 
    std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
@@ -389,30 +377,30 @@ int main( int argc, char * argv[] )
    //----------------------
    //  Write Info File
    //----------------------
-   mesh->writeInfo(output, verbose);
+   mesh->writeInfo(outputMesh, verbose);
 
    //----------------------
    // Write Tet Mesh Files
    //----------------------
-   if(format == tetgen)
-      mesh->writeNodeEle(output, verbose);
-   else if(format == "scirun")
-      mesh->writePtsEle(output, verbose);
-   else if(format == "matlab")
-      mesh->writeMatlab(output, verbose);
-   else if(format == "VTKusm")
-      mesh->writeVTKunstructuredMesh(output, verbose);
+   if(outputFormat == "tetgen")
+      mesh->writeNodeEle(outputMesh, verbose);
+   else if(outputFormat == "scirun")
+      mesh->writePtsEle(outputMesh, verbose);
+   else if(outputFormat == "matlab")
+      mesh->writeMatlab(outputMesh, verbose);
+   else if(outputFormat == "VTKusm")
+      mesh->writeVTKunstructuredMesh(outputMesh, verbose);
    else  {
-      std::cerr << "Uknown format: " << format <<
+      std::cerr << "Uknown format: " << outputFormat <<
          ". Using default: tetgen." << std::endl;
-      mesh->writeNodeEle(output, verbose);
+      mesh->writeNodeEle(outputMesh, verbose);
    }
 
    //----------------------
    // Write Surface Files
    //----------------------
    mesh->constructFaces();
-   mesh->writePly(output, verbose);
+   mesh->writePly(outputMesh, verbose);
 
 
    //-----------
