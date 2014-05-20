@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
+find_package(Slicer COMPONENTS ConfigurePrerequisites) 
 
 set(MODULE_TITLE "Cleaver Tet Mesher")
 set(MODULE_NAME CleaverCLI)
