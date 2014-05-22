@@ -1,4 +1,4 @@
-SlicerConfig.cmake
+*.cmake
 Cleaver
 include
 Makefile
@@ -6,3 +6,9 @@ bin
 lib
 CMake*
 cmake*
+AdditionalLauncherSettings.ini
+CleaverCLI/CleaverCLICLP.h
+CleaverCLI/ITKIOFactoryRegistration/
+CleaverExtension.s4ext
+DartConfiguration.tcl
+build/
