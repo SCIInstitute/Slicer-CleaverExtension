@@ -398,16 +398,6 @@ IF(BUILD_HEX)
 ENDIF(BUILD_HEX)
 
 #-----------------------------------------------------------------------------
-# For testing
-OPTION(BUILD_TESTING "Enable this to perform testing of Teem" OFF)
-IF(BUILD_TESTING)
-  SET(DART_ROOT "" CACHE INTERNAL "" FORCE)
-  INCLUDE(CTest)
-  ENABLE_TESTING()
-  MARK_AS_ADVANCED(TCL_TCLSH)
-ENDIF(BUILD_TESTING)
-
-#-----------------------------------------------------------------------------
 # Help outside projects build Teem projects.
 INCLUDE(CMakeExportBuildSettings)
 EXPORT_LIBRARY_DEPENDENCIES(${Teem_BINARY_DIR}/TeemLibraryDepends.cmake)

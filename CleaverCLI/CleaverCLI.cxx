@@ -316,34 +316,25 @@ int main( int argc, char * argv[] )
 {
    PARSE_ARGS;
 
-   //std::cout << "Do Cleaver Work" << std::endl;
-   std::ofstream testout("debug.txt");
-
-   testout << "alpha short = " << alphaShort << std::endl;
-   testout << "alpha long  = " << alphaLong << std::endl;
-
    std::vector<std::string> inputs;
+
    if(!input1.empty())
-      inputs.push_back(input1);
+     inputs.push_back(input1);
    if(!input2.empty())
-      inputs.push_back(input2);
+     inputs.push_back(input2);
    if(!input3.empty())
-      inputs.push_back(input3);
+     inputs.push_back(input3);
    if(!input4.empty())
-      inputs.push_back(input4);
+     inputs.push_back(input4);
    if(!input5.empty())
-      inputs.push_back(input5);
+     inputs.push_back(input5);
    if(!input6.empty())
-      inputs.push_back(input6);
+     inputs.push_back(input6);
    if(!input7.empty())
-      inputs.push_back(input7);
+     inputs.push_back(input7);
    if(!input8.empty())
-      inputs.push_back(input8);
+     inputs.push_back(input8);
 
-   for(size_t i = 0; i < inputs.size(); i++)
-      testout << "Material " << (i+1) << ": " << inputs.at(i) << std::endl;
-
-   testout.close();
    std::vector<Cleaver::ScalarField*> fields = loadNRRDFiles(inputs, verbose);
 
    if(fields.empty())
@@ -377,30 +368,33 @@ int main( int argc, char * argv[] )
    //----------------------
    //  Write Info File
    //----------------------
-   mesh->writeInfo(outputMesh, verbose);
+//   std::string path = input1.substr(0,input1.rfind("/")+1);
+   std::string output = "" + outputMesh;
+//   mesh->writeInfo(output, verbose);
 
-   //----------------------
-   // Write Tet Mesh Files
-   //----------------------
-   if(outputFormat == "tetgen")
-      mesh->writeNodeEle(outputMesh, verbose);
-   else if(outputFormat == "scirun")
-      mesh->writePtsEle(outputMesh, verbose);
-   else if(outputFormat == "matlab")
-      mesh->writeMatlab(outputMesh, verbose);
-   else if(outputFormat == "VTKusm")
-      mesh->writeVTKunstructuredMesh(outputMesh, verbose);
-   else  {
-      std::cerr << "Uknown format: " << outputFormat <<
-         ". Using default: tetgen." << std::endl;
-      mesh->writeNodeEle(outputMesh, verbose);
-   }
 
    //----------------------
    // Write Surface Files
    //----------------------
    mesh->constructFaces();
-   mesh->writePly(outputMesh, verbose);
+//   mesh->writePly(output, verbose);
+
+   //----------------------
+   // Write Tet Mesh Files
+   //----------------------
+   if(outputFormat == "tetgen")
+      mesh->writeNodeEle(output, verbose);
+   else if(outputFormat == "scirun")
+      mesh->writePtsEle(output, verbose);
+   else if(outputFormat == "matlab")
+      mesh->writeMatlab(output, verbose);
+   else if(outputFormat == "VTKusm")
+      mesh->writeVTKunstructuredMesh(output, verbose);
+   else  {
+      std::cerr << "Uknown format: " << outputFormat <<
+         ". Using default: tetgen." << std::endl;
+      mesh->writeNodeEle(output, verbose);
+   }
 
 
    //-----------

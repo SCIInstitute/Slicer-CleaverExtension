@@ -63,7 +63,7 @@ namespace Cleaver
 {
 
 Face::Face() :
-            normal(0,0,0)
+                normal(0,0,0)
 {
   tets[0] = tets[1] = -1;
   face_index[0] = face_index[1] = -1;
@@ -81,7 +81,7 @@ Tet::Tet() : mat_label(-1)
 }
 
 Tet::Tet(Vertex3D *v1, Vertex3D *v2, Vertex3D *v3, Vertex3D *v4, int material) :
-        mat_label(material)
+            mat_label(material)
 {    
   // initialize face info to empty
   faces[0] = faces[1] = faces[2] = faces[3] = -1;
@@ -109,7 +109,7 @@ Tet::~Tet()
 
 
 TetMesh::TetMesh(std::vector<Vertex3D*> &verts, std::vector<Tet*> &tets) :
-        verts(verts), tets(tets), faces(0), nFaces(0), time(0)
+            verts(verts), tets(tets), faces(0), nFaces(0), time(0)
 {
 }
 
@@ -198,7 +198,8 @@ void TetMesh::writePly(const std::string &filename, bool verbose)
     {
       interfaces.push_back(f);
 
-      unsigned int color_key = (1 << (int)t1->mat_label) + (1 << (int)t2->mat_label);
+      unsigned int color_key = (1 << (int)t1->mat_label) +
+          (1 << (int)t2->mat_label);
       int color_index = -1;
       for(unsigned int k=0; k < keys.size(); k++)
       {
@@ -216,7 +217,6 @@ void TetMesh::writePly(const std::string &filename, bool verbose)
       colors.push_back(color_index);
     }
   }
-
   int face_count = interfaces.size();
   int vertex_count = 3*face_count;
 
@@ -278,7 +278,7 @@ void TetMesh::writePly(const std::string &filename, bool verbose)
 }
 
 std::pair<int,int> keyToPair(unsigned int key)
-    {
+        {
   std::pair<int,int> labels;
 
   int offset = 0;
@@ -302,7 +302,7 @@ std::pair<int,int> keyToPair(unsigned int key)
 
 
   return labels;
-    }
+        }
 
 //===================================================
 // writeMultiplePly()
@@ -824,69 +824,119 @@ void TetMesh::writeInfo(const string &filename, bool verbose)
 void TetMesh::writeVTKunstructuredMesh(
     const std::string &filename, bool verbose) {
   if(verbose)
-    std::cout << "Writing VTK unstructured mesh file: "
-    << (filename + ".vtu") << std::endl;
-  float num_mats = 0.;
-  for(size_t i = 0; i < this->tets.size(); i++) {
-    if((float)(this->tets[i]->mat_label) > num_mats) {
-      num_mats = (float)(this->tets[i]->mat_label);
+    std::cout << "Writing VTK unstructured mesh files: "
+    << (filename + "*.vtk") << std::endl;
+
+  std::vector<unsigned int> interfaces;
+  std::vector<unsigned int> colors;
+  std::vector<unsigned int> keys;
+  std::vector<unsigned int> keysize;
+
+  // determine output faces and vertices vertex counts
+  for(int f=0; f < nFaces; f++)
+  {
+    int t1_index = faces[f].tets[0];
+    int t2_index = faces[f].tets[1];
+
+    if(t1_index < 0 || t2_index < 0){
+      continue;
+    }
+
+    Tet *t1 = this->tets[t1_index];
+    Tet *t2 = this->tets[t2_index];
+
+    if(t1->mat_label != t2->mat_label)
+    {
+      interfaces.push_back(f);
+
+      unsigned int color_key = (1 << (int)t1->mat_label) +
+          (1 << (int)t2->mat_label);
+      int color_index = -1;
+      for(unsigned int k=0; k < keys.size(); k++)
+      {
+        if(keys[k] == color_key){
+          color_index = k;
+          break;
+        }
+      }
+      if(color_index == -1)
+      {
+        keys.push_back(color_key);
+        color_index = keys.size() - 1;
+      }
+
+      colors.push_back(color_index);
+      if(color_index > (int)keysize.size() - 1)
+        keysize.resize((size_t)color_index + 1);
+      keysize.at((size_t)color_index) ++;
     }
   }
-  std::ofstream file((filename + ".vtu").c_str());
-  file << "<?xml version=\"1.0\"?>\n";
-  file << "<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" " ;
-  file << "byte_order=\"LittleEndian\"";
-  file << " compressor=\"vtkZLibDataCompressor\">\n";
-  file << "  <UnstructuredGrid>\n";
-  file << "    <Piece NumberOfPoints=\"" << this->tets.size()*4;
-  file << "\" NumberOfCells=\"" << this->tets.size() << "\">\n";
-  file << "      <PointData Scalars=\"scalars\">\n";
-  file << "        <DataArray type=\"Float32\" Name=\"scalars\"";
-  file << " format=\"ascii\">\n          ";
-  for(size_t i = 0; i < this->tets.size(); i++) {
-    for(size_t j = 0; j < 4; j++)
-      file << ((float)(this->tets[i]->mat_label) / num_mats) << "\n          ";
-    file << "\n          ";
+  //-----------------------------------
+  //         Write Headers
+  //-----------------------------------
+  std::vector<std::ofstream*> output;
+  for(size_t i=0; i < keys.size(); i++) {
+    std::stringstream ss;
+    ss << filename << i << ".vtk";
+    output.push_back(new std::ofstream(ss.str().c_str()));
+    *output.at(i) << "# vtk DataFile Version 2.0\n";
+    *output.at(i) << ss.str() << " Polygon Mesh\n";
+    *output.at(i) << "ASCII\n";
+    *output.at(i) << "DATASET UNSTRUCTURED_GRID\n";
+    *output.at(i) << "POINTS " << keysize.at(i)*3 << " float\n";
   }
-  file << "\n        </DataArray>\n";
-  file << "      </PointData>\n";
-  file << "      <CellData>\n";
-  file << "      </CellData>\n";
-  file << "      <Points>\n";
-  file << "        <DataArray type=\"Float32\"";
-  file << " NumberOfComponents=\"3\" format=\"ascii\">\n          ";
-  for(size_t i = 0; i < this->tets.size(); i++) {
-    for(int v=0; v < 4; v++)
-      file << this->tets[i]->verts[v]->pos().x <<
-      " " << this->tets[i]->verts[v]->pos().y <<
-      " " << this->tets[i]->verts[v]->pos().z << "\n          ";
-    file << "\n          ";
+  //-----------------------------------
+  //         Write Vertex List
+  //-----------------------------------
+  for(size_t f=0; f < interfaces.size(); f++)
+  {
+    Face &face = faces[interfaces[f]];
+
+    Vertex3D *v1 = this->verts[face.verts[0]];
+    Vertex3D *v2 = this->verts[face.verts[1]];
+    Vertex3D *v3 = this->verts[face.verts[2]];
+
+    *output.at(colors[f]) << v1->pos().x << " " <<
+        v1->pos().y << " " << v1->pos().z << "\n";
+    *output.at(colors[f]) << v2->pos().x << " " <<
+        v2->pos().y << " " << v2->pos().z << "\n";
+    *output.at(colors[f]) << v3->pos().x << " " <<
+        v3->pos().y << " " << v3->pos().z << "\n";
   }
-  file << "\n        </DataArray>\n";
-  file << "      </Points>\n";
-  file << "      <Cells>\n";
-  file << "        <DataArray type=\"Int32\" Name=\"connectivity\"";
-  file << " format=\"ascii\">\n          ";
-  for(size_t i = 0; i < this->tets.size(); i++) {
-    for(int v=0; v < 4; v++)
-      file << (i*4 + v) << " ";
-    file  << std::endl << "\n          ";
+  //-----------------------------------
+  //         Write Cell/Face List
+  //-----------------------------------
+  for(size_t f=0; f < keys.size(); f++) {
+    *output.at(f) << "CELLS " << keysize.at(f) << " "
+        << (keysize.at(f)*4) <<"\n";
+    for(size_t i=0; i < keysize.at(f); i++)
+      *output.at(f) << 3 << " " << (i*3) <<  " " <<
+      (i*3+1) << " " << (i*3+2) << "\n";
+    *output.at(f) << "CELL_TYPES " << keysize.at(f) <<"\n";
+    for(size_t i=0; i < keysize.at(f); i++)
+      *output.at(f) << 5 << "\n";
+    *output.at(f) << "CELL_DATA " << keysize.at(f) <<"\n";
+    *output.at(f) << "SCALARS cell_scalars int 1\n";
+    *output.at(f) << "LOOKUP_TABLE default\n";
+    for(size_t i=0; i < keysize.at(f); i++)
+      *output.at(f) << i << "\n";
+    *output.at(f) << "COLOR_SCALARS cell_colors 3\n";
   }
-  file << "\n        </DataArray>\n";
-  file << "        <DataArray type=\"Int32\" Name=\"offsets\"";
-  file << " format=\"ascii\">\n          ";
-  for(size_t i = 0; i < this->tets.size(); i++)
-    file << (4*(i+1)) << ((i%10==9)?"\n          ":" ");
-  file << "\n        </DataArray>\n";
-  file << "        <DataArray type=\"UInt8\" Name=\"types\"";
-  file << " format=\"ascii\">\n          ";
-  for(size_t i = 0; i < this->tets.size(); i++)
-    file << 10 << ((i%10==9)?"\n          ":" ");
-  file << "\n        </DataArray>\n";
-  file << "      </Cells>\n";
-  file << "    </Piece>\n";
-  file << "  </UnstructuredGrid>\n";
-  file << "</VTKFile>\n";
+  //-----------------------------------
+  //         Write Color List
+  //-----------------------------------
+  for(size_t f=0; f < interfaces.size(); f++)
+  {
+    // output 3 color components
+    *output.at(colors[f]) << INTERFACE_COLORS[colors[f]%12][0] << " ";
+    *output.at(colors[f]) << INTERFACE_COLORS[colors[f]%12][1] << " ";
+    *output.at(colors[f]) << INTERFACE_COLORS[colors[f]%12][2] << endl;
+  }
+  //CLOSE
+  for(size_t i=0; i < keys.size(); i++) {
+    (*output.at(i)).close();
+    delete output.at(i);
+  }
 }
 //===================================================
 // writeMatlab()

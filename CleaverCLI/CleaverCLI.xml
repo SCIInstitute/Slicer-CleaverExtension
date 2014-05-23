@@ -5,113 +5,120 @@
   <description><![CDATA[This is a CLI module for generating high quality volumetric tetrahedral meshes and triangle surface meshes of multimaterial volume data.]]></description>
   <version>1.5.4</version>
   <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/4.3/Modules/CleaverCLI</documentation-url>
-    <license>http://www.sci.utah.edu/software/cleaver#twoj_fragment1-2</license>
+  <license>http://www.sci.utah.edu/software/cleaver#twoj_fragment1-2</license>
   <contributor>Jonathan Bronson (SCI Institute) </contributor>
   <acknowledgements>This project was supported by grants from the National Center for Research Resources (5P41RR012553-14) and the National Institute of General Medical Sciences (8 P41 GM103545-14) from the National Institutes of Health.</acknowledgements>
   <parameters>
-      <label>IO</label>
-      <description><![CDATA[Input/output parameters]]></description>
-      <file >
-         <label>Input Volume 1</label>
-         <name>input1</name>
-         <longflag>input1</longflag>
-      </file>
-      <file >
-         <label>Input Volume 2</label>
-         <name>input2</name>
-         <longflag>input2</longflag>
-      </file>
-      <file >
-         <label>Input Volume 3</label>
-         <name>input3</name>
-         <longflag>input3</longflag>
-      </file>
-      <file >
-         <label>Input Volume 4</label>
-         <name>input4</name>
-         <longflag>input4</longflag>
-      </file>
-      <file >
-         <label>Input Volume 5</label>
-         <name>input5</name>
-         <longflag>input5</longflag>
-      </file>
-      <file >
-         <label>Input Volume 6</label>
-         <name>input6</name>
-         <longflag>input6</longflag>
-      </file>
-      <file >
-         <label>Input Volume 7</label>
-         <name>input7</name>
-         <longflag>input7</longflag>
-      </file>
-      <file >
-         <label>Input Volume 8</label>
-         <name>input8</name>
-         <longflag>input8</longflag>
-      </file>
-   <string>
-     <name>outputMesh</name>
-     <channel>output</channel>
-     <label>Output Mesh Name</label>
-     <longflag>output</longflag>
-     <description><![CDATA[Output Mesh Name]]></description>
-     <default>output</default>
-   </string>
-
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <label>Input Volume 1</label>
+      <channel>input</channel>
+      <name>input1</name>
+      <longflag>input1</longflag>
+    </image>
+    <image>
+      <label>Input Volume 2</label>
+      <channel>input</channel>
+      <name>input2</name>
+      <longflag>input2</longflag>
+    </image>
+    <image>
+      <label>Input Volume 3</label>
+      <channel>input</channel>
+      <name>input3</name>
+      <longflag>input3</longflag>
+    </image>
+    <image>
+      <label>Input Volume 4</label>
+      <channel>input</channel>
+      <name>input4</name>
+      <longflag>input4</longflag>
+    </image>
+    <image>
+      <label>Input Volume 5</label>
+      <channel>input</channel>
+      <name>input5</name>
+      <longflag>input5</longflag>
+    </image>
+    <image>
+      <label>Input Volume 6</label>
+      <channel>input</channel>
+      <name>input6</name>
+      <longflag>input6</longflag>
+    </image>
+    <image>
+      <label>Input Volume 7</label>
+      <channel>input</channel>
+      <name>input7</name>
+      <longflag>input7</longflag>
+    </image>
+    <image>
+      <label>Input Volume 8</label>
+      <channel>input</channel>
+      <name>input8</name>
+      <longflag>input8</longflag>
+    </image>
+    <string>
+      <name>outputMesh</name>
+      <channel>output</channel>
+      <label>Output Mesh Name</label>
+      <longflag>output</longflag>
+      <description><![CDATA[Output Mesh Name]]></description>
+      <default>output</default>
+    </string>
   </parameters>
 
   <parameters>
     <label>Cleaver Settings</label>
-     <boolean>
-     <name>paddingOn</name>
-     <label>Use Padding?</label>
-     <channel>input</channel>
-     <longflag>padding</longflag>
-     <description><![CDATA[Setting to include padding material on boundary.]]></description>
-     <default>false</default>
-     </boolean>
+    <boolean>
+      <name>paddingOn</name>
+      <label>Use Padding?</label>
+      <channel>input</channel>
+      <longflag>padding</longflag>
+      <description><![CDATA[Setting to include padding material on boundary.]]></description>
+      <default>false</default>
+    </boolean>
 
-     <float>
-       <label>Alpha Short</label>
-       <name>alphaShort</name>
-       <channel>input</channel>
-       <longflag>as</longflag>
-       <default>0.357</default>
-       <description><![CDATA[Alpha Short violation parameter.]]></description>
-     </float>
+    <float>
+      <label>Alpha Short</label>
+      <name>alphaShort</name>
+      <channel>input</channel>
+      <longflag>as</longflag>
+      <default>0.357</default>
+      <description><![CDATA[Alpha Short violation parameter.]]></description>
+    </float>
 
 
-     <float>
-       <label>Alpha Long</label>
-       <name>alphaLong</name>
-       <channel>input</channel>
-       <longflag>al</longflag>
-       <default>0.203</default>
-       <description><![CDATA[Alpha Long violation parameter.]]></description>
-     </float>
-     <boolean>
-        <name>verbose</name>
-        <flag>v</flag>
-        <default>false</default>
-       <label>Verbose?</label>
-       <description><![CDATA[Whether to output command line info.]]></description>
-     </boolean>
+    <float>
+      <label>Alpha Long</label>
+      <name>alphaLong</name>
+      <channel>input</channel>
+      <longflag>al</longflag>
+      <default>0.203</default>
+      <description><![CDATA[Alpha Long violation parameter.]]></description>
+    </float>
+    <boolean>
+      <name>verbose</name>
+      <flag>v</flag>
+      <default>false</default>
+      <label>Verbose?</label>
+      <description><![CDATA[Whether to output command line info.]]></description>
+    </boolean>
 
-<string-enumeration>
-  <name>outputFormat</name>
-  <channel>input</channel>
-  <longflag>format</longflag>
-  <label>Output Format</label>
-  <element>tetgen</element>
-  <element>scirun</element>
-  <element>matlab</element>
-  <element>VTKusm</element>
-  <default>tetgen</default>
-  <description><![CDATA[Format for ouput mesh.]]></description>
-</string-enumeration>
+    <string-enumeration>
+      <name>outputFormat</name>
+      <channel>input</channel>
+      <longflag>format</longflag>
+      <label>Output Format</label>
+      <element>tetgen</element>
+      <element>scirun</element>
+      <element>matlab</element>
+      <element>VTKusm</element>
+      <default>tetgen</default>
+      <description><![CDATA[Format for ouput mesh.]]></description>
+    </string-enumeration>
 
-</parameters>
+  </parameters>
 
 </executable>
