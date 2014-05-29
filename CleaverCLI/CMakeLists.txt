@@ -9,11 +9,11 @@ include(${GenerateCLP_USE_FILE})
 
 set(MODULE_SRCS CleaverCLI.cxx)
 GENERATECLP(MODULE_SRCS CleaverCLI.xml)
-set(MODULE_TARGET_LIBRARIES cleaver teem)
+FIND_LIBRARY(TEEM_LIBRARY NAMES libteem teem PATHS ${Teem_LIBRARY_DIRS})
+set(MODULE_TARGET_LIBRARIES cleaver ${TEEM_LIBRARY})
 set(MODULE_INCLUDE_DIRECTORIES)
 add_subdirectory(Cleaver)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
-
 
 add_executable(${MODULE_NAME} ${MODULE_SRCS})
 target_link_libraries(${MODULE_NAME} ${MODULE_TARGET_LIBRARIES})

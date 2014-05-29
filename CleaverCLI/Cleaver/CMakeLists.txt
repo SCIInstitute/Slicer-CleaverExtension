@@ -45,8 +45,3 @@ OPTION(BUILD_CLEAVER_APP "Build Cleaver Command Line App (Requires TEEM)" ON)
 
 # Build Cleaver Library (no dependencies)
 ADD_SUBDIRECTORY(lib)
-
-# Build Cleaver Command App (requires teem library)
-ADD_SUBDIRECTORY(teem)
-
-

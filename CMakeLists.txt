@@ -28,8 +28,14 @@ find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
 
 #-----------------------------------------------------------------------------
-add_subdirectory(CleaverCLI)
+find_package(Teem REQUIRED)
+if(NOT Teem_FOUND)
+    message(FATAL_ERROR "Need Teem to build")
+endif(NOT Teem_FOUND)
+include(${Teem_USE_FILE})
 
+#-----------------------------------------------------------------------------
+add_subdirectory(CleaverCLI)
 
 #-----------------------------------------------------------------------------
 include(${Slicer_EXTENSION_CPACK})
