@@ -95,7 +95,11 @@ public:
 
 
     //void writeOff(const std::string &filename);
-    void writeVTKunstructuredMesh(const std::string &filename, bool verbose); //vtk
+    void writeVTKunstructuredMesh(
+        std::vector<std::string>& filenames, bool verbose); //vtk faces
+    void writeVTKunstructuredMeshTets(
+        std::vector<std::string>& filenames, bool verbose); //vtk tets
+
     void writeMatlab(const std::string &filename, bool verbose = false);   // matlab format
     void writeNodeEle(const std::string &filename, bool verbose = false);  // tetview format
     void writePtsEle(const std::string &filename, bool verbose = false);   // scirun format

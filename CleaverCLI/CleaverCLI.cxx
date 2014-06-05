@@ -369,8 +369,29 @@ int main( int argc, char * argv[] )
    //  Write Info File
    //----------------------
 //   std::string path = input1.substr(0,input1.rfind("/")+1);
-   std::string output = "" + outputMesh;
+   std::string output = "" + outputMesh1;
 //   mesh->writeInfo(output, verbose);
+   std::vector<std::string> outputs;
+   if(!outputMesh1.empty())
+     outputs.push_back(outputMesh1);
+   if(!outputMesh2.empty())
+     outputs.push_back(outputMesh2);
+   if(!outputMesh3.empty())
+     outputs.push_back(outputMesh3);
+   if(!outputMesh4.empty())
+     outputs.push_back(outputMesh4);
+   if(!outputMesh5.empty())
+     outputs.push_back(outputMesh5);
+   if(!outputMesh6.empty())
+     outputs.push_back(outputMesh6);
+   if(!outputMesh7.empty())
+     outputs.push_back(outputMesh7);
+   if(!outputMesh8.empty())
+     outputs.push_back(outputMesh8);
+   if(!outputMesh9.empty())
+     outputs.push_back(outputMesh9);
+   if(!outputMesh10.empty())
+     outputs.push_back(outputMesh10);
 
 
    //----------------------
@@ -388,12 +409,14 @@ int main( int argc, char * argv[] )
       mesh->writePtsEle(output, verbose);
    else if(outputFormat == "matlab")
       mesh->writeMatlab(output, verbose);
-   else if(outputFormat == "VTKusm")
-      mesh->writeVTKunstructuredMesh(output, verbose);
+   else if(outputFormat == "VTKtet")
+      mesh->writeVTKunstructuredMeshTets(outputs, verbose);
+   else if(outputFormat == "VTKfac")
+      mesh->writeVTKunstructuredMesh(outputs, verbose);
    else  {
       std::cerr << "Uknown format: " << outputFormat <<
-         ". Using default: tetgen." << std::endl;
-      mesh->writeNodeEle(output, verbose);
+         ". Using default: VTKtet." << std::endl;
+      mesh->writeVTKunstructuredMeshTets(outputs, verbose);
    }
 
 

@@ -52,6 +52,14 @@
 #include "BCCLattice3D.h"
 #include "Util.h"
 #include "Matlab.h"
+#include <stdio.h>  /* defines FILENAME_MAX */
+#ifdef WINDOWS
+    #include <direct.h>
+    #define GetCurrentDir _getcwd
+#else
+    #include <unistd.h>
+    #define GetCurrentDir getcwd
+ #endif
 
 using namespace std;
 
@@ -63,7 +71,7 @@ namespace Cleaver
 {
 
 Face::Face() :
-                normal(0,0,0)
+                        normal(0,0,0)
 {
   tets[0] = tets[1] = -1;
   face_index[0] = face_index[1] = -1;
@@ -81,7 +89,7 @@ Tet::Tet() : mat_label(-1)
 }
 
 Tet::Tet(Vertex3D *v1, Vertex3D *v2, Vertex3D *v3, Vertex3D *v4, int material) :
-            mat_label(material)
+                    mat_label(material)
 {    
   // initialize face info to empty
   faces[0] = faces[1] = faces[2] = faces[3] = -1;
@@ -109,7 +117,7 @@ Tet::~Tet()
 
 
 TetMesh::TetMesh(std::vector<Vertex3D*> &verts, std::vector<Tet*> &tets) :
-            verts(verts), tets(tets), faces(0), nFaces(0), time(0)
+                    verts(verts), tets(tets), faces(0), nFaces(0), time(0)
 {
 }
 
@@ -278,7 +286,7 @@ void TetMesh::writePly(const std::string &filename, bool verbose)
 }
 
 std::pair<int,int> keyToPair(unsigned int key)
-        {
+                {
   std::pair<int,int> labels;
 
   int offset = 0;
@@ -302,7 +310,7 @@ std::pair<int,int> keyToPair(unsigned int key)
 
 
   return labels;
-        }
+                }
 
 //===================================================
 // writeMultiplePly()
@@ -815,17 +823,128 @@ void TetMesh::writeInfo(const string &filename, bool verbose)
 
   info_file.close();
 }
+
+
+
+//===================================================
+// writeVTKunstructuredMeshTets()
+//
+// Public method that writes the mesh
+// in the VTK unstructured mesh format (tets).
+//===================================================
+void TetMesh::writeVTKunstructuredMeshTets(
+    std::vector<std::string>& filenames, bool verbose) {
+  if(verbose) {
+    std::cout << "Writing VTK unstructured mesh files(tets): \n";
+    for(size_t i = 0; i < filenames.size(); i++)
+      std::cout << "\t" << filenames.at(i) << std::endl;
+  }
+  // get the number of files/mats
+  std::vector<std::ofstream*> output;
+  std::vector<size_t> numTetsPerMat;
+  for(size_t i = 0; i < this->tets.size(); i++) {
+    size_t label = tets.at(i)->mat_label;
+    if (label + 1 > numTetsPerMat.size())
+      numTetsPerMat.resize(label+1);
+    numTetsPerMat.at(label)++;
+  }
+  if (numTetsPerMat.size() > filenames.size()) {
+    std::cout << "WARNING: There are more models generated than are" <<
+        " specified within Slicer Outputs. You can manually add " <<
+        "the additional models listed here:\n\n";
+    size_t  extra = 1;
+    char cCurrentPath[FILENAME_MAX];
+    GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+    cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
+    while (filenames.size() != numTetsPerMat.size()) {
+      std::stringstream ss;
+      ss << "extra_model" << extra++;
+      std::string file(ss.str().c_str());
+      std::cout << "\t" << cCurrentPath << "/" << file << std::endl;
+      filenames.push_back(file);
+    }
+  }
+  //-----------------------------------
+  //         Write Headers
+  //-----------------------------------
+  for(size_t i=0; i < numTetsPerMat.size(); i++) {
+    output.push_back(new std::ofstream(filenames.at(i).c_str()));
+    *output.at(i) << "# vtk DataFile Version 2.0\n";
+    *output.at(i) << filenames.at(i) << " Tet Mesh\n";
+    *output.at(i) << "ASCII\n";
+    *output.at(i) << "DATASET UNSTRUCTURED_GRID\n";
+    *output.at(i) << "POINTS " << numTetsPerMat.at(i)*4 << " float\n";
+  }
+  //-----------------------------------
+  //         Write Vertex List
+  //-----------------------------------
+  for(size_t f=0; f < this->tets.size(); f++)
+  {
+    Tet* t = this->tets.at(f);
+
+    Vertex3D *v1 = t->verts[0];
+    Vertex3D *v2 = t->verts[1];
+    Vertex3D *v3 = t->verts[2];
+    Vertex3D *v4 = t->verts[3];
+
+    *output.at(t->mat_label) << v1->pos().x << " " <<
+        v1->pos().y << " " << v1->pos().z << "\n";
+    *output.at(t->mat_label) << v2->pos().x << " " <<
+        v2->pos().y << " " << v2->pos().z << "\n";
+    *output.at(t->mat_label) << v3->pos().x << " " <<
+        v3->pos().y << " " << v3->pos().z << "\n";
+    *output.at(t->mat_label) << v4->pos().x << " " <<
+        v4->pos().y << " " << v4->pos().z << "\n";
+  }
+  //-----------------------------------
+  //         Write Cell/Face List
+  //-----------------------------------
+  for(size_t f=0; f < numTetsPerMat.size(); f++) {
+    *output.at(f) << "CELLS " << numTetsPerMat.at(f) << " "
+        << (numTetsPerMat.at(f)*5) <<"\n";
+    for(size_t i=0; i < numTetsPerMat.at(f); i++)
+      *output.at(f) << 4 << " " << (i*3) <<  " " <<
+      (i*3+1) << " " << (i*3+2) << " " << (i*3+3) << "\n";
+    *output.at(f) << "CELL_TYPES " << numTetsPerMat.at(f) <<"\n";
+    for(size_t i=0; i < numTetsPerMat.at(f); i++)
+      *output.at(f) << 10 << "\n";
+    *output.at(f) << "CELL_DATA " << numTetsPerMat.at(f) <<"\n";
+    *output.at(f) << "SCALARS cell_scalars int 1\n";
+    *output.at(f) << "LOOKUP_TABLE default\n";
+    for(size_t i=0; i < numTetsPerMat.at(f); i++)
+      *output.at(f) << i << "\n";
+    *output.at(f) << "COLOR_SCALARS cell_colors 3\n";
+  }
+  //-----------------------------------
+  //         Write Color List
+  //-----------------------------------
+  for(size_t f=0; f < this->tets.size(); f++)
+  {
+    Tet* t = this->tets.at(f);
+    // output 3 color components
+    *output.at(t->mat_label) << INTERFACE_COLORS[t->mat_label%12][0] << " ";
+    *output.at(t->mat_label) << INTERFACE_COLORS[t->mat_label%12][1] << " ";
+    *output.at(t->mat_label) << INTERFACE_COLORS[t->mat_label%12][2] << endl;
+  }
+  //CLOSE
+  for(size_t i=0; i < numTetsPerMat.size(); i++) {
+    (*output.at(i)).close();
+    delete output.at(i);
+  }
+}
 //===================================================
 // writeVTKunstructuredMesh()
 //
 // Public method that writes the mesh
-// in the VTK unstructured mesh XML format.
+// in the VTK unstructured mesh format (faces).
 //===================================================
 void TetMesh::writeVTKunstructuredMesh(
-    const std::string &filename, bool verbose) {
-  if(verbose)
-    std::cout << "Writing VTK unstructured mesh files: "
-    << (filename + "*.vtk") << std::endl;
+    std::vector<std::string> &filenames, bool verbose) {
+  if(verbose) {
+    std::cout << "Writing VTK unstructured mesh files(tets): \n";
+    for(size_t i = 0; i < filenames.size(); i++)
+      std::cout << "\t" << filenames.at(i) << std::endl;
+  }
 
   std::vector<unsigned int> interfaces;
   std::vector<unsigned int> colors;
@@ -871,16 +990,30 @@ void TetMesh::writeVTKunstructuredMesh(
       keysize.at((size_t)color_index) ++;
     }
   }
+  if (keys.size() > filenames.size()) {
+    std::cout << "WARNING: There are more models generated than are" <<
+        " specified within Slicer Outputs. You can manually add " <<
+        "the additional models listed here:\n\n";
+    size_t  extra = 1;
+    char cCurrentPath[FILENAME_MAX];
+    GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+    cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
+    while (filenames.size() != keys.size()) {
+      std::stringstream ss;
+      ss << "extra_model" << extra++ << ".vtk";
+      std::string file(ss.str().c_str());
+      std::cout << "\t" << cCurrentPath << "/" << file << std::endl;
+      filenames.push_back(file);
+    }
+  }
   //-----------------------------------
   //         Write Headers
   //-----------------------------------
   std::vector<std::ofstream*> output;
   for(size_t i=0; i < keys.size(); i++) {
-    std::stringstream ss;
-    ss << filename << i << ".vtk";
-    output.push_back(new std::ofstream(ss.str().c_str()));
+    output.push_back(new std::ofstream(filenames.at(i).c_str()));
     *output.at(i) << "# vtk DataFile Version 2.0\n";
-    *output.at(i) << ss.str() << " Polygon Mesh\n";
+    *output.at(i) << filenames.at(i) << " Polygon Mesh\n";
     *output.at(i) << "ASCII\n";
     *output.at(i) << "DATASET UNSTRUCTURED_GRID\n";
     *output.at(i) << "POINTS " << keysize.at(i)*3 << " float\n";
