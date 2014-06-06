@@ -96,9 +96,9 @@ public:
 
     //void writeOff(const std::string &filename);
     void writeVTKunstructuredMesh(
-        const std::string& filename, bool verbose); //vtk faces
+        std::vector<std::string>& filenames, bool verbose); //vtk faces
     void writeVTKunstructuredMeshTets(
-        const std::string& filename, bool verbose); //vtk tets
+        std::vector<std::string>& filenames, bool verbose); //vtk tets
     void writeMRML(const std::string& filename,
                    size_t num_models, bool verbose); // minimal mrml structure
 

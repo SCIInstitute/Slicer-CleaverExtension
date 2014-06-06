@@ -365,11 +365,40 @@ int main( int argc, char * argv[] )
       std::cout << "max: " << mesh->max_angle << std::endl;
    }
 
-   if(output.empty()) output = "output.mrml";
-   else
-     output = output.substr(0,output.find_last_of("/")+1)
-     + "output.mrml";
+   //----------------------
+   //  Write Info File
+   //----------------------
+//   std::string path = input1.substr(0,input1.rfind("/")+1);
+   std::string output = "" + outputMesh1;
+//   mesh->writeInfo(output, verbose);
+   std::vector<std::string> outputs;
+   if(!outputMesh1.empty())
+     outputs.push_back(outputMesh1);
+   if(!outputMesh2.empty())
+     outputs.push_back(outputMesh2);
+   if(!outputMesh3.empty())
+     outputs.push_back(outputMesh3);
+   if(!outputMesh4.empty())
+     outputs.push_back(outputMesh4);
+   if(!outputMesh5.empty())
+     outputs.push_back(outputMesh5);
+   if(!outputMesh6.empty())
+     outputs.push_back(outputMesh6);
+   if(!outputMesh7.empty())
+     outputs.push_back(outputMesh7);
+   if(!outputMesh8.empty())
+     outputs.push_back(outputMesh8);
+   if(!outputMesh9.empty())
+     outputs.push_back(outputMesh9);
+   if(!outputMesh10.empty())
+     outputs.push_back(outputMesh10);
+
+
+   //----------------------
+   // Write Surface Files
+   //----------------------
    mesh->constructFaces();
+//   mesh->writePly(output, verbose);
 
    //----------------------
    // Write Tet Mesh Files
@@ -381,13 +410,13 @@ int main( int argc, char * argv[] )
    else if(outputFormat == "matlab")
       mesh->writeMatlab(output, verbose);
    else if(outputFormat == "VTKtet")
-      mesh->writeVTKunstructuredMeshTets(output, verbose);
+      mesh->writeVTKunstructuredMeshTets(outputs, verbose);
    else if(outputFormat == "VTKfac")
-      mesh->writeVTKunstructuredMesh(output, verbose);
+      mesh->writeVTKunstructuredMesh(outputs, verbose);
    else  {
       std::cerr << "Uknown format: " << outputFormat <<
          ". Using default: VTKtet." << std::endl;
-      mesh->writeVTKunstructuredMeshTets(output, verbose);
+      mesh->writeVTKunstructuredMeshTets(outputs, verbose);
    }
 
 

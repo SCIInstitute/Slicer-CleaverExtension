@@ -821,14 +821,25 @@ void TetMesh::writeInfo(const string &filename, bool verbose)
 // in the VTK unstructured mesh format (tets).
 //===================================================
 void TetMesh::writeVTKunstructuredMeshTets(
-    const std::string& filename, bool verbose) {
-  std::string path = filename.substr(0,filename.find_last_of("/")+1);
+    std::vector<std::string>& filenames, bool verbose) {
+  std::string path;
+  if (filenames.size() > 0)
+    path = filenames.at(0).substr(
+        0,filenames.at(0).find_last_of("/")+1);
+  if (path.empty()) {
+    char cCurrentPath[FILENAME_MAX];
+    GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+    cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
+    path = std::string(cCurrentPath) + "/";
+  }
   if(verbose) {
     std::cout << "Writing VTK unstructured mesh files(tets): \n";
-    std::cout << "\t" << path << "model*.vtk" << std::endl;
+    for(size_t i = 0; i < filenames.size(); i++)
+      std::cout << "\t" << filenames.at(i) << std::endl;
   }
   // get the number of files/mats
   std::vector<std::ofstream*> output;
+  std::vector<std::ofstream*> output2;
   std::vector<size_t> numTetsPerMat;
   for(size_t i = 0; i < this->tets.size(); i++) {
     size_t label = tets.at(i)->mat_label;
@@ -836,18 +847,39 @@ void TetMesh::writeVTKunstructuredMeshTets(
       numTetsPerMat.resize(label+1);
     numTetsPerMat.at(label)++;
   }
+  size_t definedOutputs = filenames.size();
+  if (numTetsPerMat.size() > filenames.size()) {
+    std::cout << "WARNING: There are more models in this" <<
+        " output than there are defined in Slicer. Extra " <<
+        "models will be saved to load manually as: \n" ;
+    size_t num = definedOutputs;
+    while (numTetsPerMat.size() != filenames.size()) {
+      std::stringstream ss;
+      ss << path << "model" << num++ << ".vtk" ;
+      filenames.push_back(ss.str());
+      std::cout << "\t" << ss.str() << std:: endl;
+    }
+  }
   //-----------------------------------
   //         Write Headers
   //-----------------------------------
   for(size_t i=0; i < numTetsPerMat.size(); i++) {
-    std::stringstream ss;
-    ss << path << "model" << i << ".vtk";
-    output.push_back(new std::ofstream(ss.str().c_str()));
+    output.push_back(new std::ofstream(filenames.at(i).c_str()));
     *output.at(i) << "# vtk DataFile Version 2.0\n";
-    *output.at(i) << ss.str() << " Tet Mesh\n";
+    *output.at(i) << filenames.at(i) << " Tet Mesh\n";
     *output.at(i) << "ASCII\n";
     *output.at(i) << "DATASET UNSTRUCTURED_GRID\n";
     *output.at(i) << "POINTS " << numTetsPerMat.at(i)*4 << " float\n";
+    if (i < definedOutputs) {
+      std::stringstream ss;
+      ss << path << "model" << i << ".vtk";
+      output2.push_back(new std::ofstream(ss.str().c_str()));
+      *output2.at(i) << "# vtk DataFile Version 2.0\n";
+      *output2.at(i) << ss.str() << " Tet Mesh\n";
+      *output2.at(i) << "ASCII\n";
+      *output2.at(i) << "DATASET UNSTRUCTURED_GRID\n";
+      *output2.at(i) << "POINTS " << numTetsPerMat.at(i)*4 << " float\n";
+    }
   }
   //-----------------------------------
   //         Write Vertex List
@@ -869,6 +901,16 @@ void TetMesh::writeVTKunstructuredMeshTets(
         v3->pos().y << " " << v3->pos().z << "\n";
     *output.at(t->mat_label) << v4->pos().x << " " <<
         v4->pos().y << " " << v4->pos().z << "\n";
+    if (t->mat_label < definedOutputs) {
+      *output2.at(t->mat_label) << v1->pos().x << " " <<
+          v1->pos().y << " " << v1->pos().z << "\n";
+      *output2.at(t->mat_label) << v2->pos().x << " " <<
+          v2->pos().y << " " << v2->pos().z << "\n";
+      *output2.at(t->mat_label) << v3->pos().x << " " <<
+          v3->pos().y << " " << v3->pos().z << "\n";
+      *output2.at(t->mat_label) << v4->pos().x << " " <<
+          v4->pos().y << " " << v4->pos().z << "\n";
+    }
   }
   //-----------------------------------
   //         Write Cell/Face List
@@ -882,30 +924,27 @@ void TetMesh::writeVTKunstructuredMeshTets(
     *output.at(f) << "CELL_TYPES " << numTetsPerMat.at(f) <<"\n";
     for(size_t i=0; i < numTetsPerMat.at(f); i++)
       *output.at(f) << 10 << "\n";
-    *output.at(f) << "CELL_DATA " << numTetsPerMat.at(f) <<"\n";
-    *output.at(f) << "SCALARS cell_scalars int 1\n";
-    *output.at(f) << "LOOKUP_TABLE default\n";
-    for(size_t i=0; i < numTetsPerMat.at(f); i++)
-      *output.at(f) << i << "\n";
-    *output.at(f) << "COLOR_SCALARS cell_colors 3\n";
-  }
-  //-----------------------------------
-  //         Write Color List
-  //-----------------------------------
-  for(size_t f=0; f < this->tets.size(); f++)
-  {
-    Tet* t = this->tets.at(f);
-    // output 3 color components
-    *output.at(t->mat_label) << INTERFACE_COLORS[t->mat_label%12][0] << " ";
-    *output.at(t->mat_label) << INTERFACE_COLORS[t->mat_label%12][1] << " ";
-    *output.at(t->mat_label) << INTERFACE_COLORS[t->mat_label%12][2] << endl;
+    if (f < definedOutputs) {
+      *output2.at(f) << "CELLS " << numTetsPerMat.at(f) << " "
+          << (numTetsPerMat.at(f)*5) <<"\n";
+      for(size_t i=0; i < numTetsPerMat.at(f); i++)
+        *output2.at(f) << 4 << " " << (i*3) <<  " " <<
+        (i*3+1) << " " << (i*3+2) << " " << (i*3+3) << "\n";
+      *output2.at(f) << "CELL_TYPES " << numTetsPerMat.at(f) <<"\n";
+      for(size_t i=0; i < numTetsPerMat.at(f); i++)
+        *output2.at(f) << 10 << "\n";
+    }
   }
   //CLOSE
   for(size_t i=0; i < numTetsPerMat.size(); i++) {
     (*output.at(i)).close();
     delete output.at(i);
+    if (i < definedOutputs) {
+      (*output2.at(i)).close();
+      delete output2.at(i);
+    }
   }
-  writeMRML(filename, numTetsPerMat.size(), verbose);
+  writeMRML(path + "output.mrml", numTetsPerMat.size(), verbose);
 }
 
 //===================================================
@@ -915,11 +954,21 @@ void TetMesh::writeVTKunstructuredMeshTets(
 // in the VTK unstructured mesh format (faces).
 //===================================================
 void TetMesh::writeVTKunstructuredMesh(
-    const std::string &filename, bool verbose) {
-  std::string path = filename.substr(0,filename.find_last_of("/")+1);
+    std::vector<std::string> &filenames, bool verbose) {
+  std::string path;
+  if (filenames.size() > 0)
+    path = filenames.at(0).substr(
+        0,filenames.at(0).find_last_of("/")+1);
+  if (path.empty()) {
+    char cCurrentPath[FILENAME_MAX];
+    GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+    cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
+    path = std::string(cCurrentPath) + "/";
+  }
   if(verbose) {
-    std::cout << "Writing VTK unstructured mesh files(tets): \n";
-    std::cout << "\t" << path << "model*.vtk" << std::endl;
+    std::cout << "Writing VTK unstructured mesh files(faces): \n";
+    for(size_t i = 0; i < filenames.size(); i++)
+      std::cout << "\t" << filenames.at(i) << std::endl;
   }
   std::vector<unsigned int> interfaces;
   std::vector<unsigned int> colors;
@@ -965,19 +1014,43 @@ void TetMesh::writeVTKunstructuredMesh(
       keysize.at((size_t)color_index) ++;
     }
   }
+  size_t definedOutputs = filenames.size();
+  if (keys.size() > filenames.size()) {
+    std::cout << "WARNING: There are more models in this" <<
+        " output than there are defined in Slicer. Extra " <<
+        "models will be saved to load manually as: \n" ;
+    size_t num = definedOutputs;
+    while (keys.size() != filenames.size()) {
+      std::stringstream ss;
+      ss << path << "model" << num++ << ".vtk" ;
+      filenames.push_back(ss.str());
+      std::cout << "\t" << ss.str() << std:: endl;
+    }
+  }
   //-----------------------------------
   //         Write Headers
   //-----------------------------------
   std::vector<std::ofstream*> output;
+  std::vector<std::ofstream*> output2;
   for(size_t i=0; i < keys.size(); i++) {
     std::stringstream ss;
     ss << path << "model" << i << ".vtk";
-    output.push_back(new std::ofstream(ss.str().c_str()));
+    output.push_back(new std::ofstream(filenames.at(i).c_str()));
     *output.at(i) << "# vtk DataFile Version 2.0\n";
-    *output.at(i) << ss.str() << " Polygon Mesh\n";
+    *output.at(i) << filenames.at(i) << " Polygon Mesh\n";
     *output.at(i) << "ASCII\n";
     *output.at(i) << "DATASET UNSTRUCTURED_GRID\n";
     *output.at(i) << "POINTS " << keysize.at(i)*3 << " float\n";
+    if (i < definedOutputs) {
+      std::stringstream ss;
+      ss << path << "model" << i << ".vtk";
+      output2.push_back(new std::ofstream(ss.str().c_str()));
+      *output2.at(i) << "# vtk DataFile Version 2.0\n";
+      *output2.at(i) << ss.str() << " Tet Mesh\n";
+      *output2.at(i) << "ASCII\n";
+      *output2.at(i) << "DATASET UNSTRUCTURED_GRID\n";
+      *output2.at(i) << "POINTS " << keysize.at(i)*3 << " float\n";
+    }
   }
   //-----------------------------------
   //         Write Vertex List
@@ -996,6 +1069,14 @@ void TetMesh::writeVTKunstructuredMesh(
         v2->pos().y << " " << v2->pos().z << "\n";
     *output.at(colors[f]) << v3->pos().x << " " <<
         v3->pos().y << " " << v3->pos().z << "\n";
+    if (colors[f] < definedOutputs) {
+      *output2.at(colors[f]) << v1->pos().x << " " <<
+          v1->pos().y << " " << v1->pos().z << "\n";
+      *output2.at(colors[f]) << v2->pos().x << " " <<
+          v2->pos().y << " " << v2->pos().z << "\n";
+      *output2.at(colors[f]) << v3->pos().x << " " <<
+          v3->pos().y << " " << v3->pos().z << "\n";
+    }
   }
   //-----------------------------------
   //         Write Cell/Face List
@@ -1009,29 +1090,27 @@ void TetMesh::writeVTKunstructuredMesh(
     *output.at(f) << "CELL_TYPES " << keysize.at(f) <<"\n";
     for(size_t i=0; i < keysize.at(f); i++)
       *output.at(f) << 5 << "\n";
-    *output.at(f) << "CELL_DATA " << keysize.at(f) <<"\n";
-    *output.at(f) << "SCALARS cell_scalars int 1\n";
-    *output.at(f) << "LOOKUP_TABLE default\n";
-    for(size_t i=0; i < keysize.at(f); i++)
-      *output.at(f) << i << "\n";
-    *output.at(f) << "COLOR_SCALARS cell_colors 3\n";
-  }
-  //-----------------------------------
-  //         Write Color List
-  //-----------------------------------
-  for(size_t f=0; f < interfaces.size(); f++)
-  {
-    // output 3 color components
-    *output.at(colors[f]) << INTERFACE_COLORS[colors[f]%12][0] << " ";
-    *output.at(colors[f]) << INTERFACE_COLORS[colors[f]%12][1] << " ";
-    *output.at(colors[f]) << INTERFACE_COLORS[colors[f]%12][2] << endl;
+    if (f < definedOutputs) {
+      *output2.at(f) << "CELLS " << keysize.at(f) << " "
+          << (keysize.at(f)*4) <<"\n";
+      for(size_t i=0; i < keysize.at(f); i++)
+        *output2.at(f) << 3 << " " << (i*3) <<  " " <<
+        (i*3+1) << " " << (i*3+2) << "\n";
+      *output2.at(f) << "CELL_TYPES " << keysize.at(f) <<"\n";
+      for(size_t i=0; i < keysize.at(f); i++)
+        *output2.at(f) << 5 << "\n";
+    }
   }
   //CLOSE
   for(size_t i=0; i < keys.size(); i++) {
     (*output.at(i)).close();
     delete output.at(i);
+    if (i < definedOutputs){
+      (*output2.at(i)).close();
+      delete output2.at(i);
+    }
   }
-  writeMRML(filename, keys.size(), verbose);
+  writeMRML(path + "output.mrml", keys.size(), verbose);
 }
 
 //===================================================

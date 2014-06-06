@@ -59,11 +59,74 @@
       <name>input8</name>
       <longflag>input8</longflag>
     </image>
-    <geometry fileExtensions=".mrml" >
-      <name>output</name>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh1</name>
       <channel>output</channel>
-      <label>OutputScene</label>
-      <longflag>output</longflag>
+      <label>Output Model1</label>
+      <longflag>output1</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh2</name>
+      <channel>output</channel>
+      <label>Output Model2</label>
+      <longflag>output2</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh3</name>
+      <channel>output</channel>
+      <label>Output Model3</label>
+      <longflag>output3</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh4</name>
+      <channel>output</channel>
+      <label>Output Model4</label>
+      <longflag>output4</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh5</name>
+      <channel>output</channel>
+      <label>Output Model5</label>
+      <longflag>output5</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh6</name>
+      <channel>output</channel>
+      <label>Output Model6</label>
+      <longflag>output6</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh7</name>
+      <channel>output</channel>
+      <label>Output Model7</label>
+      <longflag>output7</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh8</name>
+      <channel>output</channel>
+      <label>Output Model8</label>
+      <longflag>output8</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh9</name>
+      <channel>output</channel>
+      <label>Output Model9</label>
+      <longflag>output9</longflag>
+      <description><![CDATA[Result Tetrahedral Mesh]]></description>
+    </geometry>
+    <geometry fileExtensions=".vtk">
+      <name>outputMesh10</name>
+      <channel>output</channel>
+      <label>Output Model10</label>
+      <longflag>output10</longflag>
       <description><![CDATA[Result Tetrahedral Mesh]]></description>
     </geometry>
   </parameters>
