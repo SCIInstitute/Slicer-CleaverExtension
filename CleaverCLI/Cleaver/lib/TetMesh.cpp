@@ -114,8 +114,6 @@ Tet::~Tet()
 {
 }
 
-
-
 TetMesh::TetMesh(std::vector<Vertex3D*> &verts, std::vector<Tet*> &tets) :
                     verts(verts), tets(tets), faces(0), nFaces(0), time(0)
 {
@@ -153,7 +151,6 @@ TetMesh::~TetMesh() {
 //    // to implement
 //}
 
-
 static float INTERFACE_COLORS[12][3] = {
     {141/255.0f, 211/255.0f, 199/255.0f},
     {255/255.0f, 255/255.0f, 179/255.0f},
@@ -167,8 +164,6 @@ static float INTERFACE_COLORS[12][3] = {
     {188/255.0f, 128/255.0f, 189/255.0f},
     {204/255.0f, 235/255.0f, 197/255.0f}
 };
-
-
 
 //===================================================
 // writePly()
@@ -456,8 +451,6 @@ void TetMesh::writeMultiplePly(const vector<std::string> &inputs, const std::str
   }
 }
 
-
-
 //===================================================
 // writeNodeEle()
 //
@@ -535,7 +528,6 @@ void TetMesh::writeNodeEle(const string &filename, bool verbose)
 
   elem_file.close();
 }
-
 
 //===================================================
 // writeOff()
@@ -746,8 +738,6 @@ void TetMesh::constructFaces()
   }
 }
 
-
-
 void TetMesh::computeAngles()
 {
   float min = 180;
@@ -824,8 +814,6 @@ void TetMesh::writeInfo(const string &filename, bool verbose)
   info_file.close();
 }
 
-
-
 //===================================================
 // writeVTKunstructuredMeshTets()
 //
@@ -833,11 +821,11 @@ void TetMesh::writeInfo(const string &filename, bool verbose)
 // in the VTK unstructured mesh format (tets).
 //===================================================
 void TetMesh::writeVTKunstructuredMeshTets(
-    std::vector<std::string>& filenames, bool verbose) {
+    const std::string& filename, bool verbose) {
+  std::string path = filename.substr(0,filename.find_last_of("/")+1);
   if(verbose) {
     std::cout << "Writing VTK unstructured mesh files(tets): \n";
-    for(size_t i = 0; i < filenames.size(); i++)
-      std::cout << "\t" << filenames.at(i) << std::endl;
+    std::cout << "\t" << path << "model*.vtk" << std::endl;
   }
   // get the number of files/mats
   std::vector<std::ofstream*> output;
@@ -848,29 +836,15 @@ void TetMesh::writeVTKunstructuredMeshTets(
       numTetsPerMat.resize(label+1);
     numTetsPerMat.at(label)++;
   }
-  if (numTetsPerMat.size() > filenames.size()) {
-    std::cout << "WARNING: There are more models generated than are" <<
-        " specified within Slicer Outputs. You can manually add " <<
-        "the additional models listed here:\n\n";
-    size_t  extra = 1;
-    char cCurrentPath[FILENAME_MAX];
-    GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
-    cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
-    while (filenames.size() != numTetsPerMat.size()) {
-      std::stringstream ss;
-      ss << "extra_model" << extra++;
-      std::string file(ss.str().c_str());
-      std::cout << "\t" << cCurrentPath << "/" << file << std::endl;
-      filenames.push_back(file);
-    }
-  }
   //-----------------------------------
   //         Write Headers
   //-----------------------------------
   for(size_t i=0; i < numTetsPerMat.size(); i++) {
-    output.push_back(new std::ofstream(filenames.at(i).c_str()));
+    std::stringstream ss;
+    ss << path << "model" << i << ".vtk";
+    output.push_back(new std::ofstream(ss.str().c_str()));
     *output.at(i) << "# vtk DataFile Version 2.0\n";
-    *output.at(i) << filenames.at(i) << " Tet Mesh\n";
+    *output.at(i) << ss.str() << " Tet Mesh\n";
     *output.at(i) << "ASCII\n";
     *output.at(i) << "DATASET UNSTRUCTURED_GRID\n";
     *output.at(i) << "POINTS " << numTetsPerMat.at(i)*4 << " float\n";
@@ -931,7 +905,9 @@ void TetMesh::writeVTKunstructuredMeshTets(
     (*output.at(i)).close();
     delete output.at(i);
   }
+  writeMRML(filename, numTetsPerMat.size(), verbose);
 }
+
 //===================================================
 // writeVTKunstructuredMesh()
 //
@@ -939,13 +915,12 @@ void TetMesh::writeVTKunstructuredMeshTets(
 // in the VTK unstructured mesh format (faces).
 //===================================================
 void TetMesh::writeVTKunstructuredMesh(
-    std::vector<std::string> &filenames, bool verbose) {
+    const std::string &filename, bool verbose) {
+  std::string path = filename.substr(0,filename.find_last_of("/")+1);
   if(verbose) {
     std::cout << "Writing VTK unstructured mesh files(tets): \n";
-    for(size_t i = 0; i < filenames.size(); i++)
-      std::cout << "\t" << filenames.at(i) << std::endl;
+    std::cout << "\t" << path << "model*.vtk" << std::endl;
   }
-
   std::vector<unsigned int> interfaces;
   std::vector<unsigned int> colors;
   std::vector<unsigned int> keys;
@@ -990,30 +965,16 @@ void TetMesh::writeVTKunstructuredMesh(
       keysize.at((size_t)color_index) ++;
     }
   }
-  if (keys.size() > filenames.size()) {
-    std::cout << "WARNING: There are more models generated than are" <<
-        " specified within Slicer Outputs. You can manually add " <<
-        "the additional models listed here:\n\n";
-    size_t  extra = 1;
-    char cCurrentPath[FILENAME_MAX];
-    GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
-    cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
-    while (filenames.size() != keys.size()) {
-      std::stringstream ss;
-      ss << "extra_model" << extra++ << ".vtk";
-      std::string file(ss.str().c_str());
-      std::cout << "\t" << cCurrentPath << "/" << file << std::endl;
-      filenames.push_back(file);
-    }
-  }
   //-----------------------------------
   //         Write Headers
   //-----------------------------------
   std::vector<std::ofstream*> output;
   for(size_t i=0; i < keys.size(); i++) {
-    output.push_back(new std::ofstream(filenames.at(i).c_str()));
+    std::stringstream ss;
+    ss << path << "model" << i << ".vtk";
+    output.push_back(new std::ofstream(ss.str().c_str()));
     *output.at(i) << "# vtk DataFile Version 2.0\n";
-    *output.at(i) << filenames.at(i) << " Polygon Mesh\n";
+    *output.at(i) << ss.str() << " Polygon Mesh\n";
     *output.at(i) << "ASCII\n";
     *output.at(i) << "DATASET UNSTRUCTURED_GRID\n";
     *output.at(i) << "POINTS " << keysize.at(i)*3 << " float\n";
@@ -1070,7 +1031,49 @@ void TetMesh::writeVTKunstructuredMesh(
     (*output.at(i)).close();
     delete output.at(i);
   }
+  writeMRML(filename, keys.size(), verbose);
 }
+
+//===================================================
+// writeMRML()
+//
+// Writes the minimal MRML scene file for Slicer to
+// read into memory.
+//===================================================
+void TetMesh::writeMRML(const std::string& filename,
+                        size_t num_models, bool verbose) {
+  std::cout << "Writing MRML to file: " << filename << std::endl;
+  std::ofstream out(filename.c_str());
+  out << "<MRML  version=\"Slicer4\" userTags=\"\">\n";
+  for(size_t i=0; i < num_models; i++) {
+    std::stringstream mName, mDisplay, mStorage;
+    std::string model, storage, display, file;
+    mName << "model" << i ;
+    model = mName.str();
+    mName << ".vtk" ;
+    file = mName.str();
+    mStorage << "storage" << i;
+    storage = mStorage.str();
+    mDisplay << "display" << i;
+    display = mDisplay.str();
+    out << "<Model id=\"" << model << "\" name=\"" << model <<
+        "\" displayNodeRef=\"" << display << "\"\n storageNodeRef=\""
+        << storage << "\" references=\"display:" << display << ";"
+        << "storage:" << storage << ";\" ></Model>" << std::endl;
+    out << "<ModelStorage id=\"" << storage << "\" name =\"" <<
+        storage << "\" fileName=\"" << file <<
+        "\" ></ModelStorage>" << std::endl;
+    out << "<ModelDisplay id=\"" << display << "\" name=\"" <<
+        display << "\" color=\"" << INTERFACE_COLORS[i%12][0] <<
+        " " << INTERFACE_COLORS[i%12][1] << " " <<
+        INTERFACE_COLORS[i%12][2] << "\"\n opacity=\"1\" " <<
+        "clipping=\"true\" frontfaceCulling=\"false\" " <<
+        "\nbackfaceCulling=\"false\" ></ModelDisplay>" << std::endl;
+  }
+  out << "</MRML>";
+  out.close();
+}
+
 //===================================================
 // writeMatlab()
 //

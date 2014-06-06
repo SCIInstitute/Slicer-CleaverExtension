@@ -96,9 +96,11 @@ public:
 
     //void writeOff(const std::string &filename);
     void writeVTKunstructuredMesh(
-        std::vector<std::string>& filenames, bool verbose); //vtk faces
+        const std::string& filename, bool verbose); //vtk faces
     void writeVTKunstructuredMeshTets(
-        std::vector<std::string>& filenames, bool verbose); //vtk tets
+        const std::string& filename, bool verbose); //vtk tets
+    void writeMRML(const std::string& filename,
+                   size_t num_models, bool verbose); // minimal mrml structure
 
     void writeMatlab(const std::string &filename, bool verbose = false);   // matlab format
     void writeNodeEle(const std::string &filename, bool verbose = false);  // tetview format
