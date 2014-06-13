@@ -71,4 +71,4 @@ Inside of Slicer, you can edit the program properties:
 5. Load NRRD data and choose desired volumes.
 6. In Output Model 1-10, create as many models as you desire. The program will automatically load the geometry for each model you specify. If more are generated than specified, the program will notify you (in the terminal) where the extra models are saved.
 7. Set additional settings and click "Apply" at the bottom.
-8. When the program is done, you can manually load the extra models into the Slicer Scenewith the ones automatically loaded.
+8. When the program is done, you can manually load the extra models into the Slicer Scenewith the ones automatically loaded. A MRML scene is also created with model colors already provided. You can close the current scene and load this one (location noted in the terminal).
