@@ -10,10 +10,7 @@
 
 cmake_minimum_required(VERSION 2.8.9)
 
-#-----------------------------------------------------------------------------
-#find_package(Slicer COMPONENTS ConfigurePrerequisites) 
 project(CleaverExtension)
-
 
 #-----------------------------------------------------------------------------
 set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/4.3/Extensions/CleaverExtension")
@@ -28,14 +25,7 @@ find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
 
 #-----------------------------------------------------------------------------
-find_package(Teem REQUIRED)
-if(NOT Teem_FOUND)
-    message(FATAL_ERROR "Need Teem to build")
-endif(NOT Teem_FOUND)
-include(${Teem_USE_FILE})
-
-#-----------------------------------------------------------------------------
 add_subdirectory(CleaverCLI)
 
 #-----------------------------------------------------------------------------
-include(${Slicer_EXTENSION_CPACK})
+#include(${Slicer_EXTENSION_CPACK})
