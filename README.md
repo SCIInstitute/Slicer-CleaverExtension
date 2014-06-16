@@ -34,19 +34,6 @@ There a number of dependencies required.
 1. Cmake  (www.cmake.org)
 2. Git    (git-scm.com)
 3. Slicer (www.slicer.org)
-4. tclap, ModuleDescriptionParser, GenerateCLP :
-
-	Check out the required directories from the Slicer3 repository.
-
-	svn co http://svn.slicer.org/Slicer3/trunk/Libs/SlicerExecutionModel/tclap
-	svn co http://svn.slicer.org/Slicer3/trunk/Libs/SlicerExecutionModel/ModuleDescriptionParser
-	svn co http://svn.slicer.org/Slicer3/trunk/Libs/SlicerExecutionModel/GenerateCLP
-
-	Run cmake on tclap
-	Run cmake on ModuleDescriptionParser
-	make ModuleDescriptionParser
-	Run cmake on GenerateCLP
-	make GenerateCLP
 
 Building
 =======================
@@ -57,6 +44,8 @@ Once the dependencies are obtained, you can build the module.
 2. cd build
 3. cmake ..
 4. ccmake .. #in here, set the directory for your slicer build.
+    -You can set Testing to OFF is desired.
+    -You can set BUILD_STANDALONE to ON if building outside of Slicer.
 5. make
 
 Running

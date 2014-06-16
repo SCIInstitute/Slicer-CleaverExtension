@@ -18,14 +18,10 @@ set(EXTENSION_CATEGORY "Mesh Generation")
 set(EXTENSION_CONTRIBUTORS "Jonathan Bronson (SCI Institute), Brig Bagley (SCI Institute)")
 set(EXTENSION_DESCRIPTION "This extension bundles the Cleaver meshing tool as a CLI module.")
 set(EXTENSION_ICONURL "https://github.com/SCIInstitute/Slicer-CleaverExtension/blob/master/CleaverExtension.png")
-set(EXTENSION_SCREENSHOTURLS "http://wiki.slicer.org/slicerWiki/images/a/ab/Slicer-r19441-CleaverExtension-screenshot.png http://wiki.slicer.org/slicerWiki/images/1/1e/Slicer-r19441-CleaverExtension-screenshot-2.png")
+set(EXTENSION_SCREENSHOTURLS "https://github.com/SCIInstitute/Slicer-CleaverExtension/blob/master/screenshot1.jpeg https://github.com/SCIInstitute/Slicer-CleaverExtension/blob/master/screenshot2.jpeg https://github.com/SCIInstitute/Slicer-CleaverExtension/blob/master/screenshot3.jpeg https://github.com/SCIInstitute/Slicer-CleaverExtension/blob/master/screenshot4.jpeg")
 
 #-----------------------------------------------------------------------------
 find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
-find_package(Slicer COMPONENTS ConfigurePrerequisites)
 #-----------------------------------------------------------------------------
 add_subdirectory(CleaverCLI)
-
-#-----------------------------------------------------------------------------
-include(${Slicer_EXTENSION_CPACK})
