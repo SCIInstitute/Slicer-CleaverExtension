@@ -101,6 +101,7 @@ public:
         std::vector<std::string>& filenames, bool verbose); //vtk tets
     void writeMRML(const std::string& filename,
                    size_t num_models, bool verbose); // minimal mrml structure
+    std::string outputMRML(); //returns the outMRML string;
 
     void writeMatlab(const std::string &filename, bool verbose = false);   // matlab format
     void writeNodeEle(const std::string &filename, bool verbose = false);  // tetview format
@@ -122,6 +123,7 @@ public:
     double min_angle;   // smallest dihedral angle
     double max_angle;   // largest dihedral angle
     double time;        // time taken to mesh
+    std::string outMRML;// The path to the most recent output mrml
 };
 
 }

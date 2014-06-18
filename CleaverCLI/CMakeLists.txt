@@ -1,26 +1,13 @@
 set(MODULE_TITLE "Cleaver Tet Mesher")
-
 set(MODULE_NAME CleaverCLI)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
-set(MODULE_INCLUDE_DIRECTORIES
-  ${CMAKE_BINARY_DIR}/include
-  ${Teem_DIR}/include)
+set(MODULE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/include)
 
 set(MODULE_SRCS CleaverCLI.cxx)
 
-find_package(Teem REQUIRED)
-if(NOT Teem_FOUND)
-  message(FATAL_ERROR "Need Teem to build")
-endif(NOT Teem_FOUND)
-include(${Teem_USE_FILE})
-
-set(MODULE_TARGET_LIBRARIES
-  ${ITK_LIBRARIES}
-  teem
-  cleaver
-  )
+set(MODULE_TARGET_LIBRARIES ${ITK_LIBRARIES} cleaver)
 
 SEMMacroBuildCLI(
   NAME ${MODULE_NAME}

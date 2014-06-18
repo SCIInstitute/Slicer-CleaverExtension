@@ -5,6 +5,7 @@
 #include <Cleaver/FloatField.h>
 #include <Cleaver/InverseField.h>
 #include "itkImageFileReader.h"
+//#include <Base/QTCore/qSlicerCoreIOManager.h>
 #include <fstream>
 
 // Use an anonymous namespace to keep class types and function names
@@ -224,6 +225,8 @@ int main( int argc, char * argv[] )
       ". Using default: VTKtet." << std::endl;
     mesh->writeVTKunstructuredMeshTets(outputs, verbose);
   }
+
+  std::cout << "MRML->" << mesh->outputMRML() << std::endl;
 
 
   //-----------

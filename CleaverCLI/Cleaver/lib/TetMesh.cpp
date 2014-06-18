@@ -1121,6 +1121,7 @@ void TetMesh::writeVTKunstructuredMesh(
 //===================================================
 void TetMesh::writeMRML(const std::string& filename,
                         size_t num_models, bool verbose) {
+  outMRML = filename;
   std::cout << "Writing MRML to file: " << filename << std::endl;
   std::ofstream out(filename.c_str());
   out << "<MRML  version=\"Slicer4\" userTags=\"\">\n";
@@ -1153,6 +1154,7 @@ void TetMesh::writeMRML(const std::string& filename,
   out.close();
 }
 
+std::string TetMesh::outputMRML() { return outMRML; }
 //===================================================
 // writeMatlab()
 //
