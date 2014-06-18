@@ -1,10 +1,11 @@
+*.swp
 *.cmake
 Cleaver
 include
 Makefile
 bin
 lib
-CMake*
+CMakeFiles
 cmake*
 AdditionalLauncherSettings.ini
 CleaverCLI/CleaverCLICLP.h
