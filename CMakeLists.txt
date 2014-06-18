@@ -10,10 +10,9 @@
 
 cmake_minimum_required(VERSION 2.8.9)
 
-project(CleaverExtension)
-
 #-----------------------------------------------------------------------------
-set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/4.3/Extensions/CleaverExtension")
+set(EXTENSION_NAME CleaverExtension)
+set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/4.3/Extensions/${EXTENSION_NAME}")
 set(EXTENSION_CATEGORY "Mesh Generation")
 set(EXTENSION_CONTRIBUTORS "Jonathan Bronson (SCI Institute), Brig Bagley (SCI Institute)")
 set(EXTENSION_DESCRIPTION "This extension bundles the Cleaver meshing tool as a CLI module.")
@@ -25,3 +24,5 @@ find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
 #-----------------------------------------------------------------------------
 add_subdirectory(CleaverCLI)
+
+include(${Slicer_EXTENSION_CPACK})
