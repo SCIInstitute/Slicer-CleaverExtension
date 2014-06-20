@@ -315,6 +315,7 @@ namespace Cleaver
   //===================================================
   void TetMesh::writeMultiplePly(const vector<std::string> &inputs, const std::string &filename, bool verbose)
   {
+    if (filename.size() > 0 && verbose) {}
     //-----------------------------------
     //           Initialize
     //-----------------------------------
@@ -813,74 +814,6 @@ namespace Cleaver
 
     info_file.close();
   }
-  /*void TetMesh::writeVTKunstructuredMesh(
-    const std::string &filename, bool verbose) {
-    if(verbose)
-    std::cout << "Writing VTK unstructured mesh file: "
-    << (filename + ".vtu") << std::endl;
-    float num_mats = 0.;
-    for(size_t i = 0; i < this->tets.size(); i++) {
-    if((float)(this->tets[i]->mat_label) > num_mats) {
-    num_mats = (float)(this->tets[i]->mat_label);
-    }
-    }
-    std::ofstream file((filename + ".vtu").c_str());
-    file << "<?xml version=\"1.0\"?>\n";
-    file << "<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" " ;
-    file << "byte_order=\"LittleEndian\"";
-    file << " compressor=\"vtkZLibDataCompressor\">\n";
-    file << "  <UnstructuredGrid>\n";
-    file << "    <Piece NumberOfPoints=\"" << this->tets.size()*4;
-    file << "\" NumberOfCells=\"" << this->tets.size() << "\">\n";
-    file << "      <PointData Scalars=\"scalars\">\n";
-    file << "        <DataArray type=\"Float32\" Name=\"scalars\"";
-    file << " format=\"ascii\">\n          ";
-    for(size_t i = 0; i < this->tets.size(); i++) {
-    for(size_t j = 0; j < 4; j++)
-    file << ((float)(this->tets[i]->mat_label) / num_mats) << "\n          ";
-    file << "\n          ";
-    }
-    file << "\n        </DataArray>\n";
-    file << "      </PointData>\n";
-    file << "      <CellData>\n";
-    file << "      </CellData>\n";
-    file << "      <Points>\n";
-    file << "        <DataArray type=\"Float32\"";
-    file << " NumberOfComponents=\"3\" format=\"ascii\">\n          ";
-    for(size_t i = 0; i < this->tets.size(); i++) {
-    for(int v=0; v < 4; v++)
-    file << this->tets[i]->verts[v]->pos().x <<
-    " " << this->tets[i]->verts[v]->pos().y <<
-    " " << this->tets[i]->verts[v]->pos().z << "\n          ";
-    file << "\n          ";
-    }
-    file << "\n        </DataArray>\n";
-    file << "      </Points>\n";
-    file << "      <Cells>\n";
-    file << "        <DataArray type=\"Int32\" Name=\"connectivity\"";
-    file << " format=\"ascii\">\n          ";
-    for(size_t i = 0; i < this->tets.size(); i++) {
-    for(int v=0; v < 4; v++)
-    file << (i*4 + v) << " ";
-    file  << std::endl << "\n          ";
-    }
-    file << "\n        </DataArray>\n";
-    file << "        <DataArray type=\"Int32\" Name=\"offsets\"";
-    file << " format=\"ascii\">\n          ";
-    for(size_t i = 0; i < this->tets.size(); i++)
-    file << (4*(i+1)) << ((i%10==9)?"\n          ":" ");
-    file << "\n        </DataArray>\n";
-    file << "        <DataArray type=\"UInt8\" Name=\"types\"";
-    file << " format=\"ascii\">\n          ";
-    for(size_t i = 0; i < this->tets.size(); i++)
-    file << 10 << ((i%10==9)?"\n          ":" ");
-    file << "\n        </DataArray>\n";
-    file << "      </Cells>\n";
-    file << "    </Piece>\n";
-    file << "  </UnstructuredGrid>\n";
-    file << "</VTKFile>\n";
-    }*/
-
   //===================================================
   // writeVTKunstructuredMeshTets()
   //
@@ -895,7 +828,7 @@ namespace Cleaver
           0,filenames.at(0).find_last_of("/")+1);
     if (path.empty()) {
       char cCurrentPath[FILENAME_MAX];
-      GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+      if(GetCurrentDir(cCurrentPath, sizeof(cCurrentPath))){}
       cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
       path = std::string(cCurrentPath) + "/";
     }
@@ -936,7 +869,7 @@ namespace Cleaver
       *output.at(i) << filenames.at(i) << " Tet Mesh\n";
       *output.at(i) << "ASCII\n";
       *output.at(i) << "DATASET POLYDATA\n";
-      *output.at(i) << "POINTS " << numTetsPerMat.at(i)*4 << " float\n";
+      *output.at(i) << "POINTS " << this->verts.size() << " float\n";
       if (i < definedOutputs) {
         std::stringstream ss;
         ss << path << "model" << i << ".vtk";
@@ -945,69 +878,49 @@ namespace Cleaver
         *output2.at(i) << ss.str() << " Tet Mesh\n";
         *output2.at(i) << "ASCII\n";
         *output2.at(i) << "DATASET POLYDATA\n";
-        *output2.at(i) << "POINTS " << numTetsPerMat.at(i)*4 << " float\n";
+        *output2.at(i) << "POINTS " << this->verts.size() << " float\n";
       }
     }
     //-----------------------------------
     //         Write Vertex List
     //-----------------------------------
-    for(size_t f=0; f < this->tets.size(); f++)
-    {
-      Tet* t = this->tets.at(f);
-
-      Vertex3D *v1 = t->verts[0];
-      Vertex3D *v2 = t->verts[1];
-      Vertex3D *v3 = t->verts[2];
-      Vertex3D *v4 = t->verts[3];
-
-      *output.at(t->mat_label) << v1->pos().x << " " <<
-        v1->pos().y << " " << v1->pos().z << "\n";
-      *output.at(t->mat_label) << v2->pos().x << " " <<
-        v2->pos().y << " " << v2->pos().z << "\n";
-      *output.at(t->mat_label) << v3->pos().x << " " <<
-        v3->pos().y << " " << v3->pos().z << "\n";
-      *output.at(t->mat_label) << v4->pos().x << " " <<
-        v4->pos().y << " " << v4->pos().z << "\n";
-      if (t->mat_label < definedOutputs) {
-        *output2.at(t->mat_label) << v1->pos().x << " " <<
-          v1->pos().y << " " << v1->pos().z << "\n";
-        *output2.at(t->mat_label) << v2->pos().x << " " <<
-          v2->pos().y << " " << v2->pos().z << "\n";
-        *output2.at(t->mat_label) << v3->pos().x << " " <<
-          v3->pos().y << " " << v3->pos().z << "\n";
-        *output2.at(t->mat_label) << v4->pos().x << " " <<
-          v4->pos().y << " " << v4->pos().z << "\n";
+    for(size_t f=0; f < numTetsPerMat.size(); f++) {
+      for(size_t i=0; i < this->verts.size(); i++)
+      {
+        *output.at(f) << this->verts[i]->pos().x << " "
+          << this->verts[i]->pos().y << " "
+          << this->verts[i]->pos().z << std::endl;
+        if (f < definedOutputs) {
+          *output2.at(f) << this->verts[i]->pos().x << " "
+            << this->verts[i]->pos().y << " "
+            << this->verts[i]->pos().z << std::endl;
+        }
       }
+      size_t num_tets = numTetsPerMat.at(f);
+      *output.at(f) << "POLYGONS " << num_tets*4 << " "
+        << (num_tets*16) <<"\n";
     }
     //-----------------------------------
     //         Write Cell/Face List
     //-----------------------------------
-    for(size_t f=0; f < numTetsPerMat.size(); f++) {
-      *output.at(f) << "POLYGONS " << numTetsPerMat.at(f)*4 << " "
-        << (numTetsPerMat.at(f)*16) <<"\n";
-      for(size_t i=0; i < numTetsPerMat.at(f); i++) {
-        *output.at(f) << 3 << " " << (i*3) <<  " " <<
-          (i*3+1) << " " << (i*3+2) << "\n";
-        *output.at(f) << 3 << " " << (i*3+3) <<  " " <<
-          (i*3+1) << " " << (i*3+2) << "\n";
-        *output.at(f) << 3 << " " << (i*3) <<  " " <<
-          (i*3+3) << " " << (i*3+2) << "\n";
-        *output.at(f) << 3 << " " << (i*3) <<  " " <<
-          (i*3+1) << " " << (i*3+3) << "\n";
-      }
+    for(size_t f=0; f < this->tets.size(); f++)
+    {
+      Tet* t = this->tets.at(f);
+
+      size_t v1 = t->verts[0]->tm_v_index;
+      size_t v2 = t->verts[1]->tm_v_index;
+      size_t v3 = t->verts[2]->tm_v_index;
+      size_t v4 = t->verts[3]->tm_v_index;
+
+      *output.at(t->mat_label) << 3 << " " << v1 <<  " " << v2 << " " << v3 << "\n";
+      *output.at(t->mat_label) << 3 << " " << v2 <<  " " << v3 << " " << v4 << "\n";
+      *output.at(t->mat_label) << 3 << " " << v3 <<  " " << v4 << " " << v1 << "\n";
+      *output.at(t->mat_label) << 3 << " " << v4 <<  " " << v1 << " " << v2 << "\n";
       if (f < definedOutputs) {
-        *output2.at(f) << "POLYGONS " << numTetsPerMat.at(f)*4 << " "
-          << (numTetsPerMat.at(f)*16) <<"\n";
-        for(size_t i=0; i < numTetsPerMat.at(f); i++) {
-          *output2.at(f) << 3 << " " << (i*3) <<  " " <<
-            (i*3+1) << " " << (i*3+2) << "\n";
-          *output2.at(f) << 3 << " " << (i*3+3) <<  " " <<
-            (i*3+1) << " " << (i*3+2) << "\n";
-          *output2.at(f) << 3 << " " << (i*3) <<  " " <<
-            (i*3+3) << " " << (i*3+2) << "\n";
-          *output2.at(f) << 3 << " " << (i*3) <<  " " <<
-            (i*3+1) << " " << (i*3+3) << "\n";
-        }
+        *output2.at(t->mat_label) << 3 << " " << v1 <<  " " << v2 << " " << v3 << "\n";
+        *output2.at(t->mat_label) << 3 << " " << v2 <<  " " << v3 << " " << v4 << "\n";
+        *output2.at(t->mat_label) << 3 << " " << v3 <<  " " << v4 << " " << v1 << "\n";
+        *output2.at(t->mat_label) << 3 << " " << v4 <<  " " << v1 << " " << v2 << "\n";
       }
     }
     //CLOSE
@@ -1036,7 +949,7 @@ namespace Cleaver
           0,filenames.at(0).find_last_of("/")+1);
     if (path.empty()) {
       char cCurrentPath[FILENAME_MAX];
-      GetCurrentDir(cCurrentPath, sizeof(cCurrentPath));
+      if(GetCurrentDir(cCurrentPath, sizeof(cCurrentPath))){}
       cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
       path = std::string(cCurrentPath) + "/";
     }
@@ -1191,7 +1104,8 @@ namespace Cleaver
   void TetMesh::writeMRML(const std::string& filename,
       size_t num_models, bool verbose) {
     outMRML = filename;
-    std::cout << "Writing MRML to file: " << filename << std::endl;
+    if (verbose || !verbose)
+      std::cout << "Writing MRML to file: " << filename << std::endl;
     std::ofstream out(filename.c_str());
     out << "<MRML  version=\"Slicer4\" userTags=\"\">\n";
     for(size_t i=0; i < num_models; i++) {

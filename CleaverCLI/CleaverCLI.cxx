@@ -93,10 +93,10 @@ namespace
         for(int j=0; j < h; j++){
           for(int i=0; i < w; i++){
             itk::Index<3> idx;
-            idx.SetElement(0,i); 
-            idx.SetElement(1,j); 
-            idx.SetElement(2,k); 
-            ((FloatField*)fields[f])->data()[i + j*w + k*w*h] = 
+            idx.SetElement(0,i);
+            idx.SetElement(1,j);
+            idx.SetElement(2,k);
+            ((FloatField*)fields[f])->data()[i + j*w + k*w*h] =
               static_cast<float>(nins[f]->GetPixel(idx));
           }
         }
@@ -176,7 +176,8 @@ int main( int argc, char * argv[] )
   //----------------------
   //   std::string path = input1.substr(0,input1.rfind("/")+1);
   std::string output = "" + outputMesh1;
-  //   mesh->writeInfo(output, verbose);
+  if (output.empty())
+    output = "output";
   std::vector<std::string> outputs;
   if(!outputMesh1.empty())
     outputs.push_back(outputMesh1);
@@ -204,17 +205,25 @@ int main( int argc, char * argv[] )
   // Write Surface Files
   //----------------------
   mesh->constructFaces();
-  //   mesh->writePly(output, verbose);
 
   //----------------------
   // Write Tet Mesh Files
   //----------------------
-  if(outputFormat == "tetgen")
+  if(outputFormat == "tetgen") {
     mesh->writeNodeEle(output, verbose);
-  else if(outputFormat == "scirun")
+    mesh->writePly(output, verbose);
+  mesh->writeInfo(output, verbose);
+  }
+  else if(outputFormat == "scirun") {
     mesh->writePtsEle(output, verbose);
-  else if(outputFormat == "matlab")
+    mesh->writePly(output, verbose);
+  mesh->writeInfo(output, verbose);
+  }
+  else if(outputFormat == "matlab") {
     mesh->writeMatlab(output, verbose);
+    mesh->writePly(output, verbose);
+  mesh->writeInfo(output, verbose);
+  }
   else if(outputFormat == "VTKtet")
     mesh->writeVTKunstructuredMeshTets(outputs, verbose);
   else if(outputFormat == "VTKfac")
