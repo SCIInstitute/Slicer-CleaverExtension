@@ -13,12 +13,12 @@ project(CleaverExtension)
 
 #-----------------------------------------------------------------------------
 set(EXTENSION_NAME CleaverExtension)
-set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/4.3/Extensions/${EXTENSION_NAME}")
+set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/4.3/Extensions/CleaverExtension")
 set(EXTENSION_CATEGORY "Mesh Generation")
 set(EXTENSION_CONTRIBUTORS "Jonathan Bronson (SCI Institute), Brig Bagley (SCI Institute)")
 set(EXTENSION_DESCRIPTION "This extension bundles the Cleaver meshing tool as a CLI module.")
-set(EXTENSION_ICONURL "CleaverExtension.png")
-set(EXTENSION_SCREENSHOTURLS ")screenshot1.jpeg screenshot2.jpeg screenshot3.jpeg screenshot4.jpeg") 
+set(EXTENSION_ICONURL "https://raw.githubusercontent.com/SCIInstitute/Slicer-CleaverExtension/master/CleaverExtension.png")
+set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/SCIInstitute/Slicer-CleaverExtension/master/screenshot1.jpeg https://raw.githubusercontent.com/SCIInstitute/Slicer-CleaverExtension/master/screenshot2.jpeg https://raw.githubusercontent.com/SCIInstitute/Slicer-CleaverExtension/master/screenshot3.jpeg https://raw.githubusercontent.com/SCIInstitute/Slicer-CleaverExtension/master/screenshot4.jpeg") 
 
 #-----------------------------------------------------------------------------
 find_package(Slicer REQUIRED)

@@ -150,6 +150,11 @@ int main( int argc, char * argv[] )
 
   Cleaver::AbstractVolume *volume = new Cleaver::Volume(fields);
 
+  if (scale <= 0) scale = 1.0;
+  ((Cleaver::Volume*)volume)->setSize(scale*volume->size().x,
+    scale*volume->size().y,
+    scale*volume->size().z);
+
   if(paddingOn)
     volume = new Cleaver::PaddedVolume(volume);
 
@@ -212,17 +217,17 @@ int main( int argc, char * argv[] )
   if(outputFormat == "tetgen") {
     mesh->writeNodeEle(output, verbose);
     mesh->writePly(output, verbose);
-  mesh->writeInfo(output, verbose);
+    mesh->writeInfo(output, verbose);
   }
   else if(outputFormat == "scirun") {
     mesh->writePtsEle(output, verbose);
     mesh->writePly(output, verbose);
-  mesh->writeInfo(output, verbose);
+    mesh->writeInfo(output, verbose);
   }
   else if(outputFormat == "matlab") {
     mesh->writeMatlab(output, verbose);
     mesh->writePly(output, verbose);
-  mesh->writeInfo(output, verbose);
+    mesh->writeInfo(output, verbose);
   }
   else if(outputFormat == "VTKtet")
     mesh->writeVTKunstructuredMeshTets(outputs, verbose);
