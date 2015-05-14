@@ -45,9 +45,9 @@ cmake ..
 make .. 
 
 ```
-in here, set the directory for your slicer build.
+<br/>
 **NOTES**
- * You can set <code>SLICER_DIR</code>
+ * You can set <code>Slicer_DIR</code> to the directory where you have build Slicer3D.
  * You can set <code>Testing</code> to <code>OFF</code> is desired.
  * You can set <code>BUILD_STANDALONE</code> to <code>ON</code> if building outside of Slicer.
 
