@@ -187,6 +187,15 @@
       <description><![CDATA[Format for ouput mesh.]]></description>
     </string-enumeration>
 
+    <directory>
+      <name>outputDir</name>
+      <channel>input</channel>
+      <longflag>output_path</longflag>
+      <label>Output Directory</label>
+      <default></default>
+      <description><![CDATA[Directory for ouput mesh.]]></description>
+    </directory>
+
   </parameters>
 
 </executable>

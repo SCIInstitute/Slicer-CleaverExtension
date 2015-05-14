@@ -179,31 +179,32 @@ int main( int argc, char * argv[] )
   //----------------------
   //  Write Info File
   //----------------------
-  //   std::string path = input1.substr(0,input1.rfind("/")+1);
-  std::string output = "" + outputMesh1;
+  if (!outputDir.empty() && outputDir.at(outputDir.size() - 1) != '/')
+    outputDir = outputDir + "/";
+  std::string output = outputDir + outputMesh1;
   if (output.empty())
     output = "output";
   std::vector<std::string> outputs;
   if(!outputMesh1.empty())
-    outputs.push_back(outputMesh1);
+    outputs.push_back(outputDir + outputMesh1);
   if(!outputMesh2.empty())
-    outputs.push_back(outputMesh2);
+    outputs.push_back(outputDir + outputMesh2);
   if(!outputMesh3.empty())
-    outputs.push_back(outputMesh3);
+    outputs.push_back(outputDir + outputMesh3);
   if(!outputMesh4.empty())
-    outputs.push_back(outputMesh4);
+    outputs.push_back(outputDir + outputMesh4);
   if(!outputMesh5.empty())
-    outputs.push_back(outputMesh5);
+    outputs.push_back(outputDir + outputMesh5);
   if(!outputMesh6.empty())
-    outputs.push_back(outputMesh6);
+    outputs.push_back(outputDir + outputMesh6);
   if(!outputMesh7.empty())
-    outputs.push_back(outputMesh7);
+    outputs.push_back(outputDir + outputMesh7);
   if(!outputMesh8.empty())
-    outputs.push_back(outputMesh8);
+    outputs.push_back(outputDir + outputMesh8);
   if(!outputMesh9.empty())
-    outputs.push_back(outputMesh9);
+    outputs.push_back(outputDir + outputMesh9);
   if(!outputMesh10.empty())
-    outputs.push_back(outputMesh10);
+    outputs.push_back(outputDir + outputMesh10);
 
 
   //----------------------
